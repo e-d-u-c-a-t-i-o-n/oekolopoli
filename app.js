@@ -25,32 +25,31 @@
   const controlKeys = ["sanierung", "produktion", "lebensqualitaet", "aufklaerung"];
 
   const effectNodes = {
-    politik: { x: 10, y: 22 },
-    sanierung: { x: 36, y: 24 },
-    produktion: { x: 60, y: 24 },
-    umweltbelastung: { x: 84, y: 24 },
-    bevoelkerung: { x: 12, y: 70 },
-    vermehrungsrate: { x: 33, y: 70 },
-    lebensqualitaet: { x: 58, y: 68 },
-    aufklaerung: { x: 80, y: 68 }
+    politik: { x: 12, y: 23 },
+    sanierung: { x: 34, y: 25 },
+    produktion: { x: 57, y: 25 },
+    umweltbelastung: { x: 83, y: 25 },
+    bevoelkerung: { x: 13, y: 70 },
+    vermehrungsrate: { x: 34, y: 70 },
+    lebensqualitaet: { x: 56, y: 68 },
+    aufklaerung: { x: 78, y: 68 }
   };
 
   const arrowPaths = {
-    "sanierung->umweltbelastung": "M360 210 L360 90 L885 90 L885 185",
-    "sanierung->sanierung": "M340 250 C290 250 290 295 330 295",
-    "produktion->produktion": "M610 250 C565 250 565 295 600 295",
-    "produktion->umweltbelastung": "M675 236 L820 236",
-    "umweltbelastung->umweltbelastung": "M920 245 C980 245 980 300 925 300",
-    "umweltbelastung->lebensqualitaet": "M892 300 L892 495 L635 495 L635 585",
-    "umweltbelastung->politik": "M870 430 L80 430 L80 270",
-    "aufklaerung->lebensqualitaet": "M840 655 L625 655",
-    "aufklaerung->vermehrungsrate": "M850 615 L850 760 L335 760",
-    "aufklaerung->aufklaerung": "M805 710 C760 710 760 755 800 755",
-    "lebensqualitaet->politik": "M560 600 L560 425 L82 425",
-    "lebensqualitaet->lebensqualitaet": "M570 705 C520 705 520 750 565 750",
-    "lebensqualitaet->vermehrungsrate": "M550 690 L365 690",
-    "vermehrungsrate->bevoelkerung": "M300 690 L150 690",
-    "bevoelkerung->lebensqualitaet": "M135 610 L135 500 L575 500"
+    "sanierung->umweltbelastung": "M330 205 L330 95 L845 95 L845 180",
+    "sanierung->sanierung": "M345 305 C285 305 285 365 340 365",
+    "produktion->produktion": "M575 305 C515 305 515 365 570 365",
+    "produktion->umweltbelastung": "M655 255 L760 255",
+    "umweltbelastung->umweltbelastung": "M865 305 C940 305 940 365 870 365",
+    "umweltbelastung->lebensqualitaet": "M865 330 L865 520 L625 520 L625 575",
+    "aufklaerung->lebensqualitaet": "M760 635 L635 635",
+    "aufklaerung->vermehrungsrate": "M795 610 L795 760 L330 760",
+    "aufklaerung->aufklaerung": "M800 715 C745 715 745 765 795 765",
+    "lebensqualitaet->politik": "M565 590 L565 425 L95 425 L95 300",
+    "lebensqualitaet->lebensqualitaet": "M575 705 C525 705 525 755 570 755",
+    "lebensqualitaet->vermehrungsrate": "M545 680 L390 680",
+    "vermehrungsrate->bevoelkerung": "M300 675 L170 675",
+    "bevoelkerung->lebensqualitaet": "M145 615 L145 505 L540 505"
   };
 
   const state = {
@@ -255,12 +254,12 @@
       <div class="retro-board effects-board">
         <svg class="effect-arrows" viewBox="0 0 1000 780" preserveAspectRatio="none" aria-hidden="true">
           <defs>
-            <marker id="arrow-head" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-              <path d="M 0 0 L 10 5 L 0 10 z"></path>
+            <marker id="arrow-head" viewBox="0 0 26 26" refX="24" refY="13" markerWidth="24" markerHeight="24" markerUnits="userSpaceOnUse" orient="auto-start-reverse">
+              <path d="M 1 1 L 25 13 L 1 25 z"></path>
             </marker>
           </defs>
           ${Object.keys(arrowPaths).map((key) => `
-            <path class="${activeRelation === key ? "active" : ""}" d="${arrowPaths[key]}"></path>
+            <path class="effect-line ${activeRelation === key ? "active" : ""}" data-relation="${key}" d="${arrowPaths[key]}"></path>
           `).join("")}
         </svg>
         ${metrics.map(renderEffectNode).join("")}
