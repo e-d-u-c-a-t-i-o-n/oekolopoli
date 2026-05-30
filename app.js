@@ -333,7 +333,7 @@
           <span class="meter-value">${Math.round(value)}</span>
         </div>
         <div class="station-art" aria-hidden="true">
-          <span></span><span></span><span></span><span></span>
+          <img src="${metric.image}" alt="">
         </div>
         <h3>${metric.label}</h3>
         ${planned ? `<div class="planned">${signed(planned)}</div>` : ""}

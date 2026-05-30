@@ -160,8 +160,9 @@
     "f13-Vermehrungsrate-auf-Bevoelkerung": reproductionToPopulation,
 
     "f14-Bevoelkerung-auf-Lebensqualitaet": makeCurve([
-      [0, 0], [3, -1], [9, -2], [14, -3], [20, -4],
-      [26, -5], [30, -6], [34, -7], [40, -9], [48, -10]
+      [0, -5], [1, -2], [2, 0], [18, -1], [25, -2],
+      [30, -3], [38, -4], [40, -5], [41, -6], [42, -7],
+      [43, -8], [45, -10], [48, -10]
     ], "step"),
 
     "fA-Einfluss-der-Bevoelkerung": populationToActionPoints,
