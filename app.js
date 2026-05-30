@@ -73,14 +73,14 @@
 
   function initialValues() {
     return {
-      politik: 8,
-      sanierung: 7,
-      produktion: 18,
-      umweltbelastung: 25,
-      bevoelkerung: 18,
+      politik: 0,
+      sanierung: 1,
+      produktion: 9,
+      umweltbelastung: 17,
+      bevoelkerung: 23,
       vermehrungsrate: 20,
-      lebensqualitaet: 8,
-      aufklaerung: 6
+      lebensqualitaet: 9,
+      aufklaerung: 2
     };
   }
 
