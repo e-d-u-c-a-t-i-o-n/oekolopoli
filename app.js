@@ -25,31 +25,31 @@
   const controlKeys = ["sanierung", "produktion", "lebensqualitaet", "aufklaerung"];
 
   const effectNodes = {
-    politik: { x: 12, y: 23 },
-    sanierung: { x: 34, y: 25 },
-    produktion: { x: 57, y: 25 },
-    umweltbelastung: { x: 83, y: 25 },
-    bevoelkerung: { x: 13, y: 70 },
-    vermehrungsrate: { x: 34, y: 70 },
-    lebensqualitaet: { x: 56, y: 68 },
-    aufklaerung: { x: 78, y: 68 }
+    politik: { meter: [24, 46, 32, 222], label: [72, 160, 150, 50], value: [80, 268] },
+    sanierung: { meter: [382, 176, 32, 160], label: [435, 218, 185, 50], value: [435, 338] },
+    produktion: { meter: [700, 198, 32, 180], label: [744, 255, 202, 50], value: [744, 382] },
+    umweltbelastung: { meter: [1064, 145, 32, 190], label: [1118, 204, 258, 50], value: [1118, 338] },
+    bevoelkerung: { meter: [-2, 440, 32, 250], label: [42, 568, 232, 50], value: [42, 694] },
+    vermehrungsrate: { meter: [350, 525, 32, 175], label: [392, 588, 205, 50], value: [392, 704] },
+    lebensqualitaet: { meter: [650, 490, 32, 205], label: [703, 545, 265, 50], value: [703, 700] },
+    aufklaerung: { meter: [1030, 500, 32, 205], label: [1082, 558, 212, 50], value: [1082, 704] }
   };
 
   const arrowPaths = {
-    "sanierung->umweltbelastung": "M330 205 L330 95 L845 95 L845 180",
-    "sanierung->sanierung": "M345 305 C285 305 285 365 340 365",
-    "produktion->produktion": "M575 305 C515 305 515 365 570 365",
-    "produktion->umweltbelastung": "M655 255 L760 255",
-    "umweltbelastung->umweltbelastung": "M865 305 C940 305 940 365 870 365",
-    "umweltbelastung->lebensqualitaet": "M865 330 L865 520 L625 520 L625 575",
-    "aufklaerung->lebensqualitaet": "M760 635 L635 635",
-    "aufklaerung->vermehrungsrate": "M795 610 L795 760 L330 760",
-    "aufklaerung->aufklaerung": "M800 715 C745 715 745 765 795 765",
-    "lebensqualitaet->politik": "M565 590 L565 425 L95 425 L95 300",
-    "lebensqualitaet->lebensqualitaet": "M575 705 C525 705 525 755 570 755",
-    "lebensqualitaet->vermehrungsrate": "M545 680 L390 680",
-    "vermehrungsrate->bevoelkerung": "M300 675 L170 675",
-    "bevoelkerung->lebensqualitaet": "M145 615 L145 505 L540 505"
+    "sanierung->umweltbelastung": "M500 220 L500 90 L1082 90 L1082 138",
+    "sanierung->sanierung": "M460 304 L430 304 C420 338 405 350 382 350",
+    "produktion->produktion": "M812 306 L812 342 L724 342",
+    "produktion->umweltbelastung": "M945 280 L1050 280",
+    "umweltbelastung->umweltbelastung": "M1212 252 L1212 292 C1185 318 1135 320 1098 296",
+    "umweltbelastung->lebensqualitaet": "M1210 295 L1210 445 L684 445 L684 502",
+    "aufklaerung->lebensqualitaet": "M1080 595 L970 595",
+    "aufklaerung->vermehrungsrate": "M1210 610 L1210 762 L382 762",
+    "aufklaerung->aufklaerung": "M1168 610 L1168 650 C1138 678 1100 690 1062 674",
+    "lebensqualitaet->politik": "M684 705 L684 430 L32 430 L32 280",
+    "lebensqualitaet->lebensqualitaet": "M764 618 C740 660 720 668 684 642",
+    "lebensqualitaet->vermehrungsrate": "M682 690 L382 690",
+    "vermehrungsrate->bevoelkerung": "M382 628 L32 628",
+    "bevoelkerung->lebensqualitaet": "M144 590 L144 480 L545 480 L545 545 L650 545"
   };
 
   const state = {
@@ -249,10 +249,11 @@
     const activeRelation = state.activeStep && state.activeStep.from && state.activeStep.to
       ? `${state.activeStep.from}->${state.activeStep.to}`
       : "";
+    const activePath = arrowPaths[activeRelation];
 
     return `
       <div class="retro-board effects-board">
-        <svg class="effect-arrows" viewBox="0 0 1000 780" preserveAspectRatio="none" aria-hidden="true">
+        <svg class="effect-diagram" viewBox="0 0 1403 790" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Wirkungsketten">
           <defs>
             <marker id="arrow-head" viewBox="0 0 26 26" refX="24" refY="13" markerWidth="24" markerHeight="24" markerUnits="userSpaceOnUse" orient="auto-start-reverse">
               <path d="M 1 1 L 25 13 L 1 25 z"></path>
@@ -261,8 +262,12 @@
           ${Object.keys(arrowPaths).map((key) => `
             <path class="effect-line ${activeRelation === key ? "active" : ""}" data-relation="${key}" d="${arrowPaths[key]}"></path>
           `).join("")}
+          ${activePath ? `
+            <path class="effect-flow effect-flow-red" d="${activePath}"></path>
+            <path class="effect-flow effect-flow-white" d="${activePath}"></path>
+          ` : ""}
+          ${metrics.map(renderEffectNode).join("")}
         </svg>
-        ${metrics.map(renderEffectNode).join("")}
       </div>
     `;
   }
@@ -271,15 +276,25 @@
     const node = effectNodes[metric.key];
     const value = state.values[metric.key];
     const percent = normalizedValue(metric.key, value);
+    const [meterX, meterY, meterW, meterH] = node.meter;
+    const [labelX, labelY, labelW, labelH] = node.label;
+    const [valueX, valueY] = node.value;
+    const fillHeight = Math.max(4, (meterH - 8) * percent / 100);
+    const fillY = meterY + meterH - 4 - fillHeight;
+    const tickLines = [0.2, 0.4, 0.6, 0.8].map((tick) => {
+      const y = meterY + meterH * tick;
+      return `<line class="effect-meter-tick" x1="${meterX}" y1="${y}" x2="${meterX + meterW}" y2="${y}"></line>`;
+    }).join("");
 
     return `
-      <div class="effect-node node-${metric.key}" style="left:${node.x}%; top:${node.y}%;">
-        <div class="mini-meter meter-${metric.color}">
-          <div class="meter-fill" style="height:${percent}%"></div>
-        </div>
-        <strong>${metric.label}</strong>
-        <span>${Math.round(value)}</span>
-      </div>
+      <g class="effect-node node-${metric.key}">
+        <rect class="effect-meter-shell" x="${meterX}" y="${meterY}" width="${meterW}" height="${meterH}"></rect>
+        ${tickLines}
+        <rect class="effect-meter-fill fill-${metric.color}" x="${meterX + 5}" y="${fillY}" width="${meterW - 10}" height="${fillHeight}"></rect>
+        <rect class="effect-label-box" x="${labelX}" y="${labelY}" width="${labelW}" height="${labelH}"></rect>
+        <text class="effect-label-text" x="${labelX + 14}" y="${labelY + 33}">${escapeHtml(metric.label)}</text>
+        <text class="effect-value-text" x="${valueX}" y="${valueY}">${Math.round(value)}</text>
+      </g>
     `;
   }
 
@@ -613,14 +628,26 @@
   });
 
   function bootDebugView() {
-    if (window.location.hash !== "#play" && window.location.hash !== "#effects") return;
+    if (!["#play", "#effects", "#flow"].includes(window.location.hash)) return;
 
     state.screen = "game";
     state.leaderName = "Testregierung";
-    state.view = window.location.hash === "#effects" ? "effects" : "control";
-    state.message = state.view === "effects"
-      ? "Debugansicht: Wirkungsketten ohne laufende Simulation."
-      : "Debugansicht: Stellwerk bereit.";
+    state.view = window.location.hash === "#play" ? "control" : "effects";
+    if (window.location.hash === "#flow") {
+      state.activeStep = {
+        from: "lebensqualitaet",
+        to: "lebensqualitaet",
+        delta: curves["f10-Lebensqualitaet-auf-Lebensqualitaet"](state.values.lebensqualitaet),
+        title: "f10-Lebensqualitaet-auf-Lebensqualitaet"
+      };
+      state.running = true;
+      state.paused = true;
+    }
+    state.message = window.location.hash === "#flow"
+      ? "Debugansicht: aktive Wirkung Lebensqualität."
+      : state.view === "effects"
+        ? "Debugansicht: Wirkungsketten ohne laufende Simulation."
+        : "Debugansicht: Stellwerk bereit.";
   }
 
   bootDebugView();

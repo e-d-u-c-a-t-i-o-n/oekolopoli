@@ -547,7 +547,7 @@ button:disabled {
   min-height: 480px;
 }
 
-.effect-arrows {
+.effect-diagram {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -555,10 +555,10 @@ button:disabled {
   overflow: visible;
 }
 
-.effect-arrows .effect-line {
+.effect-diagram .effect-line {
   fill: none;
   stroke: var(--line);
-  stroke-width: 8;
+  stroke-width: 11;
   stroke-linecap: square;
   stroke-linejoin: miter;
   marker-end: url("#arrow-head");
@@ -566,19 +566,108 @@ button:disabled {
   vector-effect: non-scaling-stroke;
 }
 
-.effect-arrows marker path {
+.effect-diagram marker path {
   fill: var(--line);
   stroke: none;
   marker-end: none;
 }
 
-.effect-arrows .effect-line.active {
-  stroke: var(--red);
-  filter: drop-shadow(0 0 0 var(--line)) drop-shadow(0 0 5px rgba(255, 53, 44, 0.45));
+.effect-diagram .effect-line.active {
   opacity: 1;
 }
 
+.effect-diagram .effect-flow {
+  fill: none;
+  stroke-linecap: square;
+  stroke-linejoin: miter;
+  pointer-events: none;
+  vector-effect: non-scaling-stroke;
+  animation: effect-flow 760ms linear infinite;
+}
+
+.effect-diagram .effect-flow-red {
+  stroke: var(--red);
+  stroke-width: 13;
+  stroke-dasharray: 34 30;
+}
+
+.effect-diagram .effect-flow-white {
+  stroke: #fff8e8;
+  stroke-width: 5;
+  stroke-dasharray: 12 52;
+  stroke-dashoffset: -10;
+}
+
+@keyframes effect-flow {
+  to {
+    stroke-dashoffset: -128;
+  }
+}
+
 .effect-node {
+  pointer-events: none;
+}
+
+.effect-meter-shell {
+  fill: #fffdf2;
+  stroke: var(--line);
+  stroke-width: 4;
+  filter: drop-shadow(4px 4px 0 rgba(0, 0, 0, 0.22));
+}
+
+.effect-meter-tick {
+  stroke: var(--line);
+  stroke-width: 3;
+}
+
+.effect-meter-fill {
+  stroke: rgba(0, 0, 0, 0.28);
+  stroke-width: 2;
+}
+
+.fill-red {
+  fill: var(--red);
+}
+
+.fill-green {
+  fill: var(--green);
+}
+
+.fill-orange {
+  fill: var(--orange);
+}
+
+.effect-label-box {
+  fill: #fffdf2;
+  stroke: var(--line);
+  stroke-width: 4;
+  filter: drop-shadow(4px 4px 0 rgba(0, 0, 0, 0.22));
+}
+
+.effect-label-text {
+  fill: var(--ink);
+  font-size: 29px;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.effect-value-text {
+  fill: var(--blue);
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.effect-node.node-umweltbelastung .effect-label-text {
+  font-size: 26px;
+}
+
+.effect-node.node-lebensqualitaet .effect-label-text,
+.effect-node.node-vermehrungsrate .effect-label-text {
+  font-size: 27px;
+}
+
+/* Legacy HTML-node styles kept harmless for old screenshots/cache. */
+.effect-node-legacy {
   position: absolute;
   display: grid;
   grid-template-columns: 30px minmax(80px, auto);
@@ -593,7 +682,7 @@ button:disabled {
   z-index: 2;
 }
 
-.effect-node strong {
+.effect-node-legacy strong {
   grid-column: 2;
   align-self: end;
   padding: 4px 8px;
@@ -605,7 +694,7 @@ button:disabled {
   white-space: nowrap;
 }
 
-.effect-node span {
+.effect-node-legacy span {
   grid-column: 2;
   justify-self: start;
   margin-top: 7px;
@@ -804,7 +893,7 @@ button:disabled {
     justify-content: start;
   }
 
-  .effect-node {
+  .effect-node-legacy {
     grid-template-columns: 24px minmax(68px, auto);
     padding: 5px;
   }
