@@ -160,6 +160,11 @@
     return value > 0 ? `+${value}` : String(value);
   }
 
+  function renderDeltaBadge(value) {
+    const tone = value >= 0 ? "positive" : "negative";
+    return `<strong class="delta-badge ${tone}">${signed(value)}</strong>`;
+  }
+
   function metricLabel(key) {
     return metricByKey[key] ? metricByKey[key].label : key;
   }
@@ -396,8 +401,8 @@
     const pauseDisabled = state.running ? "" : "disabled";
     const bottomToggleLabel = state.view === "control" ? "Zustand anschauen" : "Stellwerk";
     const activeText = state.activeStep
-      ? `${state.activeStep.title}: ${signed(state.activeStep.delta)} auf ${metricLabel(state.activeStep.to)}`
-      : state.message;
+      ? renderDeltaBadge(state.activeStep.delta)
+      : escapeHtml(state.message);
 
     return `
       <footer class="bottom-console">
@@ -414,7 +419,7 @@
           `).join("")}
         </section>
         <section class="console-message">
-          <p>${escapeHtml(activeText)}</p>
+          <p>${activeText}</p>
         </section>
         <section class="round-actions">
           <button data-action="toggle-view" ${state.running ? "disabled" : ""}>${bottomToggleLabel}</button>
@@ -566,7 +571,7 @@
       sim.index += 1;
       render();
       scheduleNextStep();
-    }, state.activeStep ? 760 : 480);
+    }, state.activeStep ? 1520 : 960);
   }
 
   function finishRound() {

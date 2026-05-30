@@ -694,7 +694,7 @@ button:disabled {
   stroke-linejoin: miter;
   pointer-events: none;
   vector-effect: non-scaling-stroke;
-  animation: effect-flow 760ms linear infinite;
+  animation: effect-flow 1520ms linear infinite;
 }
 
 .effect-diagram .effect-flow-red {
@@ -886,12 +886,39 @@ button:disabled {
 .console-message {
   min-width: 0;
   color: var(--blue);
-  font-size: clamp(0.95rem, 1.9vw, 1.45rem);
-  line-height: 1.35;
+  font-size: clamp(1rem, 1.7vw, 1.35rem);
+  line-height: 1.15;
 }
 
 .console-message p {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 42px;
   margin: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.console-message span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.delta-badge {
+  display: inline-block;
+  min-width: 0;
+  font-size: 1.8em;
+  font-weight: 700;
+  text-shadow: none;
+}
+
+.delta-badge.positive {
+  color: #008c3a;
+}
+
+.delta-badge.negative {
+  color: #d32921;
 }
 
 .round-actions {
