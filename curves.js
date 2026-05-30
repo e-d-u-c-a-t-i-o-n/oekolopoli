@@ -38,33 +38,41 @@
 
   function populationToActionPoints(population, context) {
     const values = context && context.values ? context.values : {};
-    const supply = (values.produktion || 0) + (values.lebensqualitaet || 0) - population;
-
-    if (supply < 0) {
-      return step([
-        [0, 0],
-        [10, -1],
-        [15, -2],
-        [20, -4],
-        [25, -6],
-        [30, -8],
-        [38, -9],
-        [48, -9]
-      ], population);
-    }
-
-    return step([
+    const production = values.produktion || 0;
+    const lifeQuality = values.lebensqualitaet || 0;
+    const supplyFactor = population > 0 ? (production + lifeQuality) / population : 1;
+    const positive = step([
       [0, 0],
       [10, 1],
-      [16, 2],
-      [21, 3],
-      [25, 4],
+      [17, 2],
+      [22, 3],
+      [26, 4],
       [30, 5],
       [34, 6],
       [38, 7],
       [42, 8],
-      [48, 9]
+      [47, 9]
     ], population);
+
+    if (supplyFactor >= 0.75) {
+      return positive;
+    }
+
+    const negativeBase = Math.abs(step([
+      [0, 0],
+      [10, -1],
+      [17, -2],
+      [22, -3],
+      [26, -4],
+      [30, -5],
+      [34, -6],
+      [38, -7],
+      [42, -8],
+      [47, -9]
+    ], population));
+    const multiplier = supplyFactor >= 0.6 ? 1 : supplyFactor >= 0.45 ? 2 : supplyFactor >= 0.3 ? 3 : 4;
+
+    return -negativeBase * multiplier;
   }
 
   function reproductionToPopulation(reproduction, context) {
@@ -84,44 +92,47 @@
 
   const curves = {
     "f1-Sanierung-auf-Umweltbelastung": makeCurve([
-      [0, 0], [4, -1], [9, -2], [15, -3], [21, -4], [24, -5],
-      [26, -6], [28, -7], [30, -8], [32, -9]
+      [0, 0], [10, -1], [16, -2], [19, -3], [24, -4], [27, -5],
+      [29, -6], [30, -7], [31, -8], [32, -9]
     ], "step"),
 
     "f2-Sanierung-auf-Sanierung": makeCurve([
-      [0, 0], [18, 0], [20, -1], [22, -3], [24, -4], [27, -5],
-      [32, -6]
+      [0, 0], [21, -1], [23, -2], [25, -3], [27, -2], [29, 0],
+      [32, 0]
     ], "step"),
 
     "f3-Produktion-auf-Produktion": makeCurve([
-      [0, 0], [6, 0], [7, 1], [21, 1], [22, 2], [27, 2],
-      [28, 0], [29, -8], [32, -10]
+      [0, 0], [7, 1], [21, 1], [22, 2], [25, 3], [29, 2],
+      [32, 2]
     ], "step"),
 
     "f4-Produktion-auf-Umweltbelastung": makeCurve([
-      [0, 0], [5, 0], [6, 1], [9, 2], [13, 3], [16, 4],
-      [18, 5], [20, 6], [23, 8], [25, 10], [27, 14], [28, 18],
-      [29, 22], [32, 22]
+      [0, 0], [5, 0], [6, 1], [9, 1], [10, 2], [13, 2],
+      [15, 3], [16, 3], [18, 4], [19, 4], [20, 5], [21, 5],
+      [22, 6], [23, 6], [24, 7], [25, 8], [26, 9], [27, 11],
+      [28, 14], [29, 18], [30, 22], [32, 22]
     ], "linear"),
 
     "f5-Umweltbelastung-auf-Umweltbelastung": makeCurve([
-      [0, 0], [4, -1], [12, -1], [13, -2], [18, -2], [19, -3],
-      [22, -3], [23, -4], [25, -2], [27, 0], [32, 0]
+      [0, 0], [4, -1], [14, -1], [15, -2], [20, -2], [21, -3],
+      [24, -3], [25, -4], [27, -3], [28, -2], [29, 0], [32, 0]
     ], "step"),
 
     "f6-Umweltbelastung-auf-Lebensqualitaet": makeCurve([
-      [0, 2], [3, 0], [8, -1], [12, -2], [16, -3], [19, -5],
-      [22, -7], [24, -10], [26, -14], [28, -20], [32, -25]
+      [0, 2], [1, 2], [3, 1], [8, 1], [9, 0], [11, 0],
+      [12, -1], [15, -1], [16, -2], [18, -2], [19, -3], [20, -3],
+      [21, -4], [22, -5], [23, -6], [24, -7], [25, -9],
+      [26, -12], [27, -15], [28, -18], [29, -25], [32, -25]
     ], "linear"),
 
     "f7-Aufklaerung-auf-Aufklaerung": makeCurve([
-      [0, 0], [3, -1], [7, 0], [15, 1], [21, 2],
-      [24, 1], [30, 0], [32, 0]
+      [0, 0], [3, -1], [6, 0], [15, 1], [22, 2], [25, 1],
+      [29, 0], [32, 0]
     ], "step"),
 
     "f8-Aufklaerung-auf-Lebensqualitaet": makeCurve([
-      [0, -2], [9, -1], [13, 1], [16, 2], [20, 3], [24, 4],
-      [28, 5], [29, 6], [32, 6]
+      [0, -2], [7, -1], [11, 0], [15, 1], [19, 2], [23, 3],
+      [26, 4], [29, 5], [31, 6], [32, 6]
     ], "step"),
 
     "f9-Aufklaerung-auf-Vermehrungsrate": makeCurve([
@@ -130,31 +141,33 @@
     ], "step"),
 
     "f10-Lebensqualitaet-auf-Lebensqualitaet": makeCurve([
-      [0, 0], [1, 1], [4, 0], [10, 1], [13, 2], [14, 1],
-      [17, 0], [18, -1], [23, -2], [26, -1], [29, 0], [32, 0]
+      [0, 0], [1, 1], [3, 1], [4, 0], [10, 0], [11, 1],
+      [13, 1], [14, 2], [15, 1], [17, 0], [19, -1],
+      [24, -2], [27, -1], [30, 0], [32, 0]
     ], "step"),
 
     "f11-Lebensqualitaet-auf-Vermehrungsrate": makeCurve([
-      [0, -15], [1, -8], [3, -5], [7, 0], [10, 3],
-      [12, 1], [21, 0], [32, 0]
+      [0, -15], [1, -8], [3, -5], [6, 0], [10, 3],
+      [12, 3], [13, 2], [21, 2], [22, 1], [32, 1]
     ], "linear"),
 
     "f12-Lebensqualitaet-auf-Politik": makeCurve([
-      [0, -10], [2, -8], [4, -4], [7, -1], [10, 0], [12, 1],
-      [21, 2], [25, 3], [28, 4], [30, 5], [32, 5]
+      [0, -10], [1, -8], [2, -5], [4, -2], [6, 0], [9, 1],
+      [12, 1], [13, 2], [20, 2], [21, 3], [24, 4], [27, 5],
+      [30, 5], [32, 5]
     ], "linear"),
 
     "f13-Vermehrungsrate-auf-Bevoelkerung": reproductionToPopulation,
 
     "f14-Bevoelkerung-auf-Lebensqualitaet": makeCurve([
-      [0, -5], [2, -2], [3, 0], [15, -1], [25, -2],
-      [31, -3], [40, -4], [44, -5], [46, -8], [48, -10]
+      [0, 0], [3, -1], [9, -2], [14, -3], [20, -4],
+      [26, -5], [30, -6], [34, -7], [40, -9], [48, -10]
     ], "step"),
 
     "fA-Einfluss-der-Bevoelkerung": populationToActionPoints,
 
     "fB-Einfluss-der-Politik": makeCurve([
-      [0, -5], [1, -2], [4, -1], [6, 0], [8, 1],
+      [-10, -5], [-8, -2], [-5, -1], [0, 0], [7, 1],
       [21, 2], [30, 3], [40, 3]
     ], "step"),
 

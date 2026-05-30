@@ -1,4 +1,4 @@
-# Oekolopoly
+# Oekolopoly Codex Version die sich am Original von Frederic Vester aus 1984 orientiert.
 
 Ein kompakter JavaScript-Prototyp fuer ein Oekolopoly-inspiriertes Simulationsspiel.
 
