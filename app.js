@@ -24,6 +24,54 @@
 
   const controlKeys = ["sanierung", "produktion", "lebensqualitaet", "aufklaerung"];
 
+  const scenarios = {
+    industrieland: {
+      label: "Industrieland",
+      description: "Hohe Produktion, bessere Aufklärung, spürbare Umweltbelastung.",
+      actionPoints: 8,
+      values: {
+        politik: 0,
+        sanierung: 1,
+        produktion: 9,
+        umweltbelastung: 13,
+        bevoelkerung: 23,
+        vermehrungsrate: 20,
+        lebensqualitaet: 9,
+        aufklaerung: 4
+      }
+    },
+    schwellenland: {
+      label: "Schwellenland",
+      description: "Die Ausgangslage ist angespannt, aber noch gestaltbar.",
+      actionPoints: 8,
+      values: {
+        politik: 0,
+        sanierung: 1,
+        produktion: 9,
+        umweltbelastung: 17,
+        bevoelkerung: 23,
+        vermehrungsrate: 20,
+        lebensqualitaet: 9,
+        aufklaerung: 2
+      }
+    },
+    entwicklungsland: {
+      label: "Entwicklungsland",
+      description: "Wenig Produktion, niedrige Lebensqualität, hohes Bevölkerungswachstum.",
+      actionPoints: 10,
+      values: {
+        politik: -1,
+        sanierung: 2,
+        produktion: 3,
+        umweltbelastung: 14,
+        bevoelkerung: 22,
+        vermehrungsrate: 24,
+        lebensqualitaet: 3,
+        aufklaerung: 2
+      }
+    }
+  };
+
   const effectNodes = {
     politik: { meter: [24, 46, 32, 222], label: [72, 160, 150, 50], value: [80, 268] },
     sanierung: { meter: [382, 176, 32, 160], label: [435, 218, 185, 50], value: [435, 338] },
@@ -56,8 +104,9 @@
     screen: "intro",
     view: "control",
     leaderName: "",
+    scenarioKey: "schwellenland",
     round: 1,
-    actionPoints: 8,
+    actionPoints: scenarios.schwellenland.actionPoints,
     running: false,
     paused: false,
     resultReason: "",
@@ -66,22 +115,19 @@
     simulation: null,
     allocations: blankAllocations(),
     history: [],
-    values: initialValues()
+    values: initialValues("schwellenland")
   };
 
   let timer = null;
 
-  function initialValues() {
-    return {
-      politik: 0,
-      sanierung: 1,
-      produktion: 9,
-      umweltbelastung: 17,
-      bevoelkerung: 23,
-      vermehrungsrate: 20,
-      lebensqualitaet: 9,
-      aufklaerung: 2
-    };
+  function initialValues(scenarioKey) {
+    const scenario = scenarios[scenarioKey] || scenarios.schwellenland;
+    return Object.assign({}, scenario.values);
+  }
+
+  function initialActionPoints(scenarioKey) {
+    const scenario = scenarios[scenarioKey] || scenarios.schwellenland;
+    return scenario.actionPoints;
   }
 
   function blankAllocations() {
@@ -146,6 +192,8 @@
   }
 
   function renderIntro() {
+    const selectedScenario = scenarios[state.scenarioKey] || scenarios.schwellenland;
+
     app.innerHTML = `
       <section class="intro-screen">
         <div class="intro-shade"></div>
@@ -153,20 +201,64 @@
           <p class="kicker">Regierungsauftrag</p>
           <h1>Ökolopoly</h1>
           <p>
-            Du übernimmst ein erschöpftes Schwellenland: Industrie läuft,
+            Du übernimmst ein erschöpftes Land: Industrie läuft,
             Flüsse kippen, die Bevölkerung wächst und das Vertrauen in die Politik ist niedrig.
             Du hast 12 Jahre Zeit, die Lage zu stabilisieren.
           </p>
           <form class="name-form" data-action="start-game">
             <label for="leader-name">Name des Regierungschefs</label>
             <div class="name-row">
-              <input id="leader-name" name="leaderName" maxlength="28" autocomplete="off" placeholder="Dein Name">
+              <input id="leader-name" name="leaderName" maxlength="28" autocomplete="off" placeholder="Dein Name" value="${escapeHtml(state.leaderName)}">
               <button type="submit">Amtszeit beginnen</button>
+            </div>
+            <fieldset class="scenario-picker">
+              <legend>Ausgangslage wählen</legend>
+              ${Object.keys(scenarios).map((key) => renderScenarioOption(key)).join("")}
+            </fieldset>
+            <div class="scenario-preview">
+              <strong>${selectedScenario.label}</strong>
+              <span>${selectedScenario.description}</span>
+              <dl>
+                ${renderScenarioPreviewRows(selectedScenario)}
+              </dl>
             </div>
           </form>
         </div>
       </section>
     `;
+  }
+
+  function renderScenarioOption(key) {
+    const scenario = scenarios[key];
+    const checked = key === state.scenarioKey ? "checked" : "";
+
+    return `
+      <label class="scenario-option">
+        <input type="radio" name="scenario" value="${key}" ${checked}>
+        <span>${scenario.label}</span>
+      </label>
+    `;
+  }
+
+  function renderScenarioPreviewRows(scenario) {
+    const previewRows = [
+      ["Sanierung", scenario.values.sanierung],
+      ["Produktion", scenario.values.produktion],
+      ["Umweltbelastung", scenario.values.umweltbelastung],
+      ["Aufklärung", scenario.values.aufklaerung],
+      ["Lebensqualität", scenario.values.lebensqualitaet],
+      ["Vermehrungsrate", scenario.values.vermehrungsrate],
+      ["Bevölkerung", scenario.values.bevoelkerung],
+      ["Politik", scenario.values.politik],
+      ["Aktionspunkte", scenario.actionPoints]
+    ];
+
+    return previewRows.map(([label, value]) => `
+      <div>
+        <dt>${label}</dt>
+        <dd>${value}</dd>
+      </div>
+    `).join("");
   }
 
   function renderGame() {
@@ -582,7 +674,7 @@
     state.screen = "intro";
     state.view = "control";
     state.round = 1;
-    state.actionPoints = 8;
+    state.actionPoints = initialActionPoints(state.scenarioKey);
     state.running = false;
     state.paused = false;
     state.resultReason = "";
@@ -591,7 +683,7 @@
     state.simulation = null;
     state.allocations = blankAllocations();
     state.history = [];
-    state.values = initialValues();
+    state.values = initialValues(state.scenarioKey);
     render();
   }
 
@@ -601,10 +693,15 @@
 
     event.preventDefault();
     const data = new FormData(form);
+    const scenarioKey = String(data.get("scenario") || "schwellenland");
     state.leaderName = String(data.get("leaderName") || "").trim() || "Regierungschef";
+    state.scenarioKey = scenarios[scenarioKey] ? scenarioKey : "schwellenland";
+    state.actionPoints = initialActionPoints(state.scenarioKey);
+    state.values = initialValues(state.scenarioKey);
+    state.allocations = blankAllocations();
     state.screen = "game";
     state.view = "control";
-    state.message = "Du hast am Anfang 8 Aktionspunkte. Verteile sie im Stellwerk.";
+    state.message = `Du hast am Anfang ${state.actionPoints} Aktionspunkte. Verteile sie im Stellwerk.`;
     render();
   });
 
@@ -625,6 +722,15 @@
     } else if (action === "restart") {
       restart();
     }
+  });
+
+  app.addEventListener("change", (event) => {
+    if (!event.target.matches("input[name='scenario']")) return;
+    const nameInput = app.querySelector("input[name='leaderName']");
+    if (nameInput) state.leaderName = nameInput.value;
+    const scenarioKey = event.target.value;
+    state.scenarioKey = scenarios[scenarioKey] ? scenarioKey : "schwellenland";
+    render();
   });
 
   function bootDebugView() {

@@ -140,6 +140,118 @@ button:disabled {
   box-shadow: inset 3px 3px 0 rgba(0, 0, 0, 0.18);
 }
 
+.scenario-picker {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 8px 0 0;
+  padding: 0;
+  border: 0;
+}
+
+.scenario-picker legend {
+  grid-column: 1 / -1;
+  margin-bottom: 2px;
+  color: #fff46a;
+  text-transform: uppercase;
+}
+
+.scenario-option {
+  position: relative;
+  min-width: 0;
+}
+
+.scenario-option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.scenario-option span {
+  display: grid;
+  min-height: 44px;
+  place-items: center;
+  padding: 8px 10px;
+  border: 3px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 253, 242, 0.9);
+  box-shadow: 4px 4px 0 var(--line);
+  color: var(--ink);
+  text-align: center;
+  text-shadow: none;
+  cursor: pointer;
+  text-transform: uppercase;
+}
+
+.scenario-option input:checked + span {
+  background: var(--cyan);
+  color: var(--ink);
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--line);
+}
+
+.scenario-option input:focus-visible + span {
+  outline: 3px solid #fff46a;
+  outline-offset: 3px;
+}
+
+.scenario-preview {
+  display: grid;
+  gap: 6px;
+  margin-top: 6px;
+  padding: 12px;
+  border: 3px solid var(--line);
+  border-radius: 8px;
+  background: linear-gradient(rgba(185, 204, 190, 0.94), rgba(13, 146, 58, 0.9));
+  color: #fff;
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.55);
+}
+
+.scenario-preview strong {
+  color: #fff46a;
+  font-size: 1.05rem;
+  text-transform: uppercase;
+}
+
+.scenario-preview span {
+  font-size: 0.92rem;
+}
+
+.scenario-preview dl {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 5px 10px;
+  margin: 6px 0 0;
+}
+
+.scenario-preview div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+  padding-bottom: 2px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.62);
+}
+
+.scenario-preview dt {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.scenario-preview dd {
+  min-width: 34px;
+  margin: 0;
+  padding: 1px 5px;
+  background: #aebdca;
+  color: #000;
+  text-align: right;
+  text-shadow: none;
+  box-shadow: inset 3px 3px 0 rgba(0, 0, 0, 0.24), inset -2px -2px 0 rgba(255, 255, 255, 0.4);
+}
+
 .game-screen {
   min-height: 100vh;
   display: grid;
@@ -911,6 +1023,11 @@ button:disabled {
   }
 
   .name-row {
+    grid-template-columns: 1fr;
+  }
+
+  .scenario-picker,
+  .scenario-preview dl {
     grid-template-columns: 1fr;
   }
 
