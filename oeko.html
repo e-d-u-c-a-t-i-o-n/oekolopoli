@@ -1,0 +1,611 @@
+<!doctype html>
+<html lang="de">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ökolopoly - Modern Edition (Kybernetik-Engine)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- Modernes CSS Design --- */
+        :root {
+            --bg-body: #f3f4f6;
+            --bg-surface: #ffffff;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --border-light: #e5e7eb;
+            
+            --color-primary: #3b82f6; 
+            --color-primary-hover: #2563eb;
+            --color-success: #10b981; 
+            --color-success-hover: #059669;
+            --color-danger: #ef4444; 
+            --color-warning: #f59e0b; 
+            --color-info: #06b6d4; 
+            
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            width: 100%; min-height: 100vh;
+            background: var(--bg-body); color: var(--text-main);
+            padding: 30px 20px; display: flex;
+            justify-content: center; align-items: flex-start;
+            line-height: 1.5;
+        }
+
+        .app-shell {
+            background: var(--bg-surface); max-width: 1100px;
+            width: 100%; border-radius: 20px;
+            box-shadow: var(--shadow-lg); padding: 30px;
+            display: flex; flex-direction: column; gap: 25px;
+            position: relative;
+        }
+
+        header {
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 2px solid var(--border-light); padding-bottom: 20px;
+            flex-wrap: wrap; gap: 15px;
+        }
+
+        h1 { font-size: 2.2rem; font-weight: 700; letter-spacing: -0.02em; color: var(--text-main); }
+        h1 span { font-size: 1.2rem; font-weight: 500; color: var(--text-muted); margin-left: 10px; }
+
+        .header-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+
+        .sandbox-toggle {
+            display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 0.9rem;
+            cursor: pointer; padding: 8px 12px; background: var(--bg-body);
+            border: 1px solid var(--border-light); border-radius: 10px; color: var(--text-main);
+            transition: all 0.2s;
+        }
+        .sandbox-toggle:hover { background: #e5e7eb; }
+        .sandbox-toggle input { cursor: pointer; width: 16px; height: 16px; accent-color: var(--color-warning); }
+
+        button, select {
+            padding: 10px 20px; font-size: 0.95rem; font-weight: 600;
+            border: none; border-radius: 10px; cursor: pointer;
+            transition: all 0.2s ease; display: inline-flex;
+            align-items: center; justify-content: center;
+            font-family: inherit;
+        }
+
+        .btn-outline { background: transparent; color: var(--text-main); border: 2px solid var(--border-light); }
+        .btn-outline:hover:not(:disabled) { background: var(--bg-body); border-color: #d1d5db; }
+        
+        select.btn-outline { appearance: auto; background-color: var(--bg-surface); padding-right: 12px; }
+
+        button.btn-primary { background: var(--color-primary); color: white; box-shadow: var(--shadow-md); }
+        button.btn-primary:hover:not(:disabled) { background: var(--color-primary-hover); transform: translateY(-1px); }
+        button.btn-success { background: var(--color-success); color: white; box-shadow: var(--shadow-md); padding: 14px 28px; font-size: 1.1rem; }
+        button.btn-success:hover:not(:disabled) { background: var(--color-success-hover); transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+        button:disabled, select:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+
+        .status-banner {
+            padding: 16px 20px; border-radius: 12px; font-weight: 600; font-size: 1.1rem;
+            display: flex; align-items: center; justify-content: space-between;
+            background: var(--bg-body); color: var(--text-main);
+            border: 1px solid var(--border-light); transition: all 0.3s ease;
+        }
+        .status-banner.is-danger { background: #fef2f2; color: #991b1b; border-color: #f87171; }
+        .status-banner.is-success { background: #ecfdf5; color: #065f46; border-color: #34d399; }
+        .status-banner.is-warning { background: #fffbeb; color: #b45309; border-color: #fcd34d; }
+
+        .chart-section { background: var(--bg-body); border-radius: 16px; padding: 20px; border: 1px solid var(--border-light); }
+        .legend { display: flex; gap: 20px; margin-bottom: 15px; font-size: 0.9rem; font-weight: 600; color: var(--text-muted); }
+        .legend-item { display: flex; align-items: center; gap: 8px; }
+        .legend-color { width: 14px; height: 14px; border-radius: 4px; }
+        canvas { width: 100%; height: 240px; display: block; }
+
+        .dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+        .metric-card {
+            background: var(--bg-surface); border: 1px solid var(--border-light);
+            border-radius: 16px; padding: 20px; display: flex; flex-direction: column;
+            gap: 16px; box-shadow: var(--shadow-sm); transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .metric-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+        .metric-card h3 { font-size: 1.05rem; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+        .badge { background: var(--bg-body); color: var(--text-main); padding: 4px 10px; border-radius: 20px; font-size: 0.9rem; font-weight: 700; border: 1px solid var(--border-light); min-width: 40px; text-align: center; }
+
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; margin: 10px 0; }
+        input[type=range]:focus { outline: none; }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 8px; cursor: pointer; background: var(--border-light); border-radius: 4px; }
+        input[type=range]::-webkit-slider-thumb {
+            height: 24px; width: 24px; border-radius: 50%; background: var(--bg-surface);
+            border: 2px solid var(--color-primary); cursor: pointer; -webkit-appearance: none;
+            margin-top: -8px; box-shadow: var(--shadow-md); transition: transform 0.1s;
+        }
+        input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.15); }
+        
+        input.slider-red::-webkit-slider-thumb { border-color: var(--color-danger); }
+        input.slider-green::-webkit-slider-thumb { border-color: var(--color-success); }
+        input.slider-blue::-webkit-slider-thumb { border-color: var(--color-primary); }
+        input.slider-info::-webkit-slider-thumb { border-color: var(--color-info); }
+        input.slider-warning::-webkit-slider-thumb { border-color: var(--color-warning); }
+        input.slider-danger::-webkit-slider-thumb { border-color: var(--color-danger); }
+
+        .readonly-bar { width: 100%; height: 10px; background: var(--border-light); border-radius: 5px; overflow: hidden; position: relative; margin: 8px 0; }
+        .readonly-fill { height: 100%; background: var(--color-warning); width: 50%; border-radius: 5px; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .metric-footer { font-size: 0.8rem; color: var(--text-muted); text-align: right; }
+
+        /* --- NEU: Modal Styles (Game Over / Abgesetzt) --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px);
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+        .modal-overlay.active {
+            opacity: 1; pointer-events: auto;
+        }
+        .modal-box {
+            background: var(--bg-surface); padding: 40px; border-radius: 24px;
+            max-width: 500px; width: 90%; text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            transform: translateY(20px); transition: transform 0.3s ease;
+        }
+        .modal-overlay.active .modal-box {
+            transform: translateY(0);
+        }
+        .modal-icon { font-size: 4rem; margin-bottom: 10px; }
+        .modal-title { font-size: 2rem; font-weight: 700; margin-bottom: 15px; }
+        .modal-title.danger { color: var(--color-danger); }
+        .modal-title.success { color: var(--color-success); }
+        .modal-message { font-size: 1.1rem; color: var(--text-muted); margin-bottom: 30px; line-height: 1.6; }
+        
+    </style>
+</head>
+<body>
+
+    <!-- NEU: Game Over Modal -->
+    <div id="game-modal" class="modal-overlay">
+        <div class="modal-box">
+            <div id="modal-icon" class="modal-icon">❌</div>
+            <h2 id="modal-title" class="modal-title danger">ABGESETZT!</h2>
+            <p id="modal-message" class="modal-message">Die Umwelt wurde zerstört.</p>
+            <button id="btn-modal-close" class="btn-primary" style="width: 100%; padding: 14px; font-size: 1.1rem;">Verstanden</button>
+        </div>
+    </div>
+
+    <main id="app" class="app-shell" aria-live="polite">
+        <header>
+            <h1>Ökolopoly <span id="round-display">Runde 1 / 12</span></h1>
+            <div class="header-actions">
+                <label class="sandbox-toggle" title="Schaltet alle Regler für manuelles Experimentieren frei">
+                    <input type="checkbox" id="sandbox-checkbox">
+                    Sandbox
+                </label>
+                <select id="scenario-select" class="btn-outline">
+                    <option value="industrieland">Szenario: Industrieland</option>
+                    <option value="schwellenland" selected>Szenario: Schwellenland</option>
+                    <option value="entwicklungsland">Szenario: Entwicklungsland</option>
+                </select>
+
+                <button id="btn-export" class="btn-outline" disabled>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                    CSV Export
+                </button>
+                <button id="btn-restart" class="btn-outline">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+                    Neustart
+                </button>
+            </div>
+        </header>
+
+        <div id="status-banner" class="status-banner">
+            <span id="status-message">📊 Plane deine Aktionen für die nächste Dekade sorgfältig.</span>
+            <button id="btn-next" class="btn-success">Runde abschließen ➔</button>
+        </div>
+
+        <div class="chart-section">
+            <div class="legend">
+                <div class="legend-item"><div class="legend-color" style="background: var(--color-primary);"></div> Lebensqualität</div>
+                <div class="legend-item"><div class="legend-color" style="background: var(--color-danger);"></div> Umweltbelastung</div>
+            </div>
+            <canvas id="historyChart"></canvas>
+        </div>
+
+        <div class="dashboard" id="metrics-container">
+            <!-- Dynamisch generierte Karten landen hier -->
+        </div>
+    </main>
+
+    <script>
+        (function () {
+            "use strict";
+
+            // --- TEIL 1: WIRKUNGSKURVEN & KYBERNETISCHE MATRIX ---
+            const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+
+            function interpolate(points, x) {
+                if (x <= points[0][0]) return points[0][1];
+                for (let i = 1; i < points.length; i += 1) {
+                    const left = points[i - 1];
+                    const right = points[i];
+                    if (x <= right[0]) {
+                        const span = right[0] - left[0] || 1;
+                        const ratio = (x - left[0]) / span;
+                        return left[1] + (right[1] - left[1]) * ratio;
+                    }
+                }
+                return points[points.length - 1][1];
+            }
+
+            function step(points, x) {
+                let value = points[0][1];
+                for (let i = 0; i < points.length; i += 1) {
+                    if (x >= points[i][0]) value = points[i][1];
+                }
+                return value;
+            }
+
+            function makeCurve(points, mode) {
+                return function curve(input, context) {
+                    const x = Number.isFinite(input) ? input : 0;
+                    const y = mode === "linear" ? interpolate(points, x) : step(points, x);
+                    const scale = context && context.scale ? context.scale : 1;
+                    return Math.round(y * scale);
+                };
+            }
+
+            const curves = {
+                "f1-Sanierung-auf-Umweltbelastung": makeCurve([[0, 0], [10, -3], [20, -7], [32, -12]], "linear"),
+                "f2-Sanierung-auf-Sanierung": makeCurve([[0, -1], [15, -2], [32, -4]], "linear"),
+                "f3-Produktion-auf-Produktion": makeCurve([[0, -2], [10, 0], [20, 2], [32, 4]], "linear"),
+                "f4-Produktion-auf-Umweltbelastung": makeCurve([[0, 0], [10, 2], [20, 6], [32, 12]], "linear"),
+                "f5-Umweltbelastung-auf-Umweltbelastung": makeCurve([[0, 0], [15, 1], [25, 3], [32, 5]], "linear"),
+                "f6-Umweltbelastung-auf-Lebensqualitaet": makeCurve([[0, 2], [10, 0], [20, -5], [32, -12]], "linear"),
+                "f7-Aufklaerung-auf-Aufklaerung": makeCurve([[0, -1], [16, -2], [32, -3]], "linear"),
+                "f8-Aufklaerung-auf-Lebensqualitaet": makeCurve([[0, -1], [10, 0], [20, 3], [32, 6]], "linear"),
+                "f9-Aufklaerung-auf-Vermehrungsrate": makeCurve([[0, 1], [10, 0], [20, -2], [32, -4]], "linear"),
+                "f10-Lebensqualitaet-auf-Lebensqualitaet": makeCurve([[0, -6], [3, -4], [5, 0], [7, 1], [9, 2], [18, 3], [23, 4], [27, 5], [32, 5]], "step")
+            };
+
+            const relations = [
+                ["sanierung", "umweltbelastung", "f1-Sanierung-auf-Umweltbelastung"],
+                ["sanierung", "sanierung", "f2-Sanierung-auf-Sanierung"],
+                ["produktion", "produktion", "f3-Produktion-auf-Produktion"],
+                ["produktion", "umweltbelastung", "f4-Produktion-auf-Umweltbelastung"],
+                ["umweltbelastung", "umweltbelastung", "f5-Umweltbelastung-auf-Umweltbelastung"],
+                ["umweltbelastung", "lebensqualitaet", "f6-Umweltbelastung-auf-Lebensqualitaet"],
+                ["aufklaerung", "aufklaerung", "f7-Aufklaerung-auf-Aufklaerung"],
+                ["aufklaerung", "lebensqualitaet", "f8-Aufklaerung-auf-Lebensqualitaet"],
+                ["aufklaerung", "vermehrungsrate", "f9-Aufklaerung-auf-Vermehrungsrate"],
+                ["lebensqualitaet", "lebensqualitaet", "f10-Lebensqualitaet-auf-Lebensqualitaet"]
+            ];
+
+            // --- TEIL 2: ANWENDUNGSLOGIK ---
+            const MAX_ROUNDS = 12;
+
+            const startScenarios = {
+                "industrieland": {
+                    politik: 25, sanierung: 12, produktion: 26, aufklaerung: 18,
+                    umweltbelastung: 22, vermehrungsrate: 8, bevoelkerung: 35, lebensqualitaet: 28
+                },
+                "schwellenland": {
+                    politik: 10, sanierung: 5, produktion: 10, aufklaerung: 3,
+                    umweltbelastung: 8, vermehrungsrate: 18, bevoelkerung: 20, lebensqualitaet: 14
+                },
+                "entwicklungsland": {
+                    politik: 5, sanierung: 2, produktion: 4, aufklaerung: 1,
+                    umweltbelastung: 5, vermehrungsrate: 28, bevoelkerung: 40, lebensqualitaet: 6
+                }
+            };
+
+            const metrics = [
+                { key: "politik", label: "Politik (Aktionspunkte)", max: 32, color: "slider-info", control: false },
+                { key: "sanierung", label: "Sanierung", max: 32, color: "slider-green", control: true },
+                { key: "produktion", label: "Produktion", max: 32, color: "slider-red", control: true },
+                { key: "aufklaerung", label: "Aufklärung", max: 32, color: "slider-blue", control: true },
+                { key: "umweltbelastung", label: "Umweltbelastung", max: 32, color: "slider-danger", control: false },
+                { key: "vermehrungsrate", label: "Vermehrungsrate", max: 32, color: "slider-warning", control: false },
+                { key: "bevoelkerung", label: "Bevölkerung", max: 48, color: "slider-info", control: false },
+                { key: "lebensqualitaet", label: "Lebensqualität", max: 32, color: "slider-blue", control: false }
+            ];
+
+            let state = {
+                round: 1,
+                running: true,
+                sandboxMode: false,
+                values: {},
+                history: []
+            };
+
+            const uiContainer = document.getElementById("metrics-container");
+            const roundDisplay = document.getElementById("round-display");
+            const statusBanner = document.getElementById("status-banner");
+            const statusMessage = document.getElementById("status-message");
+            const btnNext = document.getElementById("btn-next");
+            const btnExport = document.getElementById("btn-export");
+            const btnRestart = document.getElementById("btn-restart");
+            const sandboxCheckbox = document.getElementById("sandbox-checkbox");
+            const scenarioSelect = document.getElementById("scenario-select");
+            const canvas = document.getElementById("historyChart");
+            const ctx = canvas.getContext("2d");
+            
+            // Modal Elements
+            const gameModal = document.getElementById("game-modal");
+            const modalIcon = document.getElementById("modal-icon");
+            const modalTitle = document.getElementById("modal-title");
+            const modalMessage = document.getElementById("modal-message");
+            const btnModalClose = document.getElementById("btn-modal-close");
+
+            function initGame() {
+                state.round = 1;
+                state.running = true;
+                
+                const currentScenario = scenarioSelect.value;
+                state.values = { ...startScenarios[currentScenario] };
+                state.history = [];
+                
+                btnNext.style.display = "inline-flex";
+                btnExport.disabled = true;
+                scenarioSelect.disabled = false;
+                gameModal.classList.remove("active");
+                
+                updateStatusBanner();
+                recordHistory();
+                renderUI();
+                drawChart();
+            }
+
+            function updateStatusBanner() {
+                if (!state.running) return;
+                
+                if (state.sandboxMode) {
+                    statusBanner.className = "status-banner is-warning";
+                    statusMessage.textContent = "🛠️ Sandbox-Modus aktiv: Du kannst alle Werte (auch Politik) frei überschreiben.";
+                } else {
+                    statusBanner.className = "status-banner";
+                    statusMessage.textContent = "📊 Plane deine Aktionen für die nächste Dekade sorgfältig.";
+                }
+            }
+
+            sandboxCheckbox.addEventListener("change", (e) => {
+                state.sandboxMode = e.target.checked;
+                updateStatusBanner();
+                renderUI(); 
+            });
+
+            scenarioSelect.addEventListener("change", initGame);
+            btnModalClose.addEventListener("click", () => gameModal.classList.remove("active"));
+
+            function recordHistory() {
+                state.history.push({
+                    runde: state.round,
+                    lebensqualitaet: state.values.lebensqualitaet,
+                    umweltbelastung: state.values.umweltbelastung,
+                    produktion: state.values.produktion,
+                    sanierung: state.values.sanierung,
+                    aufklaerung: state.values.aufklaerung,
+                    politik: state.values.politik,
+                    vermehrungsrate: state.values.vermehrungsrate,
+                    bevoelkerung: state.values.bevoelkerung
+                });
+            }
+
+            function calculateNextState() {
+                let v = state.values;
+                let nextV = { ...v };
+                let deltas = {};
+                Object.keys(v).forEach(k => deltas[k] = 0);
+
+                metrics.forEach(m => {
+                    const isControllable = m.control || state.sandboxMode;
+                    if (isControllable) {
+                        const inputEl = document.getElementById(`input-${m.key}`);
+                        if (inputEl) {
+                            v[m.key] = parseInt(inputEl.value, 10);
+                        }
+                    }
+                });
+
+                let workingV = { ...v };
+
+                relations.forEach(([source, target, curveName]) => {
+                    if (curves[curveName]) {
+                        deltas[target] += curves[curveName](workingV[source]);
+                    }
+                });
+
+                Object.keys(deltas).forEach(k => {
+                    if (k !== 'bevoelkerung' && k !== 'politik') {
+                        let maxVal = metrics.find(m => m.key === k)?.max || 32;
+                        nextV[k] = clamp(workingV[k] + deltas[k], 0, maxVal);
+                    }
+                });
+
+                let popWachstum = Math.round((workingV.vermehrungsrate - 16) / 4);
+                nextV.bevoelkerung = clamp(workingV.bevoelkerung + popWachstum, 0, 48);
+
+                if (!state.sandboxMode) {
+                    nextV.politik = clamp(Math.round(nextV.bevoelkerung * 0.5 + nextV.lebensqualitaet * 0.2), 0, 32);
+                } else {
+                    nextV.politik = workingV.politik; 
+                }
+
+                state.values = nextV;
+            }
+
+            function advanceRound() {
+                if (!state.running) return;
+
+                scenarioSelect.disabled = true;
+
+                calculateNextState();
+                state.round++;
+                recordHistory();
+
+                // --- ABGESETZT LOGIK ---
+                if (state.values.lebensqualitaet <= 0) {
+                    endGame("Die Lebensqualität deines Volkes ist auf Null gesunken. Es kam zu massiven Aufständen und du wurdest abgesetzt!", false);
+                } else if (state.values.umweltbelastung >= 32) {
+                    endGame("Die Umweltbelastung hat das absolute Maximum erreicht. Dein Land ist unbewohnbar geworden. Du wurdest abgesetzt!", false);
+                } else if (state.values.bevoelkerung <= 0) {
+                    endGame("Dein Land ist vollständig entvölkert. Es gibt niemanden mehr, den du regieren könntest. Du wurdest abgesetzt!", false);
+                } else if (state.values.bevoelkerung >= 48) {
+                    endGame("Die absolute Überbevölkerung hat zum totalen Systemkollaps geführt. Du wurdest abgesetzt!", false);
+                } else if (state.round > MAX_ROUNDS) {
+                    endGame("Du hast 12 Dekaden erfolgreich überstanden und das kybernetische System stabilisiert. Die Zukunft ist gesichert!", true);
+                }
+
+                renderUI();
+                drawChart();
+            }
+
+            function endGame(msg, success) {
+                state.running = false;
+                statusMessage.textContent = msg;
+                btnNext.style.display = "none";
+                btnExport.disabled = false;
+                scenarioSelect.disabled = false; 
+                statusBanner.className = "status-banner " + (success ? "is-success" : "is-danger");
+
+                // Modal anzeigen
+                modalIcon.textContent = success ? "🏆" : "❌";
+                modalTitle.textContent = success ? "GEWONNEN!" : "ABGESETZT!";
+                modalTitle.className = success ? "modal-title success" : "modal-title danger";
+                modalMessage.textContent = msg;
+                gameModal.classList.add("active");
+            }
+
+            function renderUI() {
+                uiContainer.innerHTML = "";
+                roundDisplay.textContent = `Runde ${Math.min(state.round, MAX_ROUNDS)} / ${MAX_ROUNDS}`;
+
+                metrics.forEach(m => {
+                    const val = state.values[m.key];
+                    const card = document.createElement("div");
+                    card.className = "metric-card";
+
+                    let controlHTML = "";
+                    const isControllable = m.control || state.sandboxMode;
+
+                    if (isControllable && state.running) {
+                        controlHTML = `<input type="range" id="input-${m.key}" class="${m.color}" min="0" max="${m.max}" value="${val}" oninput="document.getElementById('val-${m.key}').innerText = this.value">`;
+                    } else {
+                        const percent = (val / m.max) * 100;
+                        const barColorName = m.color.replace('slider-', '');
+                        const cssColor = `var(--color-${barColorName})`;
+                        
+                        controlHTML = `
+                            <div class="readonly-bar">
+                                <div class="readonly-fill" style="width: ${percent}%; background: ${cssColor};"></div>
+                            </div>`;
+                    }
+
+                    card.innerHTML = `
+                        <h3>${m.label} <span class="badge" id="val-${m.key}">${val}</span></h3>
+                        ${controlHTML}
+                        <div class="metric-footer">Max: ${m.max}</div>
+                    `;
+                    uiContainer.appendChild(card);
+                });
+            }
+
+            function drawChart() {
+                const dpr = window.devicePixelRatio || 1;
+                const rect = canvas.getBoundingClientRect();
+                canvas.width = rect.width * dpr;
+                canvas.height = rect.height * dpr;
+                ctx.scale(dpr, dpr);
+                
+                const w = rect.width;
+                const h = rect.height;
+                const padding = 15;
+                const bottomPadding = 30;
+
+                ctx.clearRect(0, 0, w, h);
+                
+                ctx.strokeStyle = '#e5e7eb';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                for(let i=0; i<=4; i++) {
+                    const y = padding + (h - padding - bottomPadding) * (i/4);
+                    ctx.moveTo(padding, y); 
+                    ctx.lineTo(w - padding, y); 
+                }
+                ctx.stroke();
+
+                if (state.history.length === 0) return;
+
+                const stepX = (w - 2 * padding) / Math.max(1, MAX_ROUNDS);
+                
+                ctx.fillStyle = '#9ca3af';
+                ctx.font = '12px Inter, sans-serif';
+                ctx.textAlign = 'center';
+                for(let i=0; i<=MAX_ROUNDS; i++) {
+                    const x = padding + i * stepX;
+                    if(i % 2 === 0 || i === MAX_ROUNDS) {
+                        ctx.fillText(i, x, h - 5);
+                    }
+                }
+
+                function drawLine(key, colorHex, maxValue) {
+                    ctx.beginPath();
+                    ctx.strokeStyle = colorHex;
+                    ctx.lineWidth = 4;
+                    ctx.lineJoin = 'round';
+                    ctx.lineCap = 'round';
+                    
+                    state.history.forEach((data, index) => {
+                        const x = padding + index * stepX;
+                        const y = h - bottomPadding - ((data[key] / maxValue) * (h - padding - bottomPadding));
+                        if (index === 0) ctx.moveTo(x, y);
+                        else ctx.lineTo(x, y);
+                    });
+                    ctx.stroke();
+
+                    state.history.forEach((data, index) => {
+                        const x = padding + index * stepX;
+                        const y = h - bottomPadding - ((data[key] / maxValue) * (h - padding - bottomPadding));
+                        ctx.beginPath();
+                        ctx.arc(x, y, 5, 0, Math.PI * 2);
+                        ctx.fillStyle = colorHex;
+                        ctx.fill();
+                        ctx.strokeStyle = '#fff';
+                        ctx.lineWidth = 2;
+                        ctx.stroke();
+                    });
+                }
+
+                drawLine('lebensqualitaet', '#3b82f6', 32); 
+                drawLine('umweltbelastung', '#ef4444', 32); 
+            }
+
+            function exportHistoryToCSV() {
+                if (state.history.length === 0) return;
+                const headers = Object.keys(state.history[0]);
+                const csvRows = [headers.join(';')];
+
+                state.history.forEach(row => {
+                    csvRows.push(headers.map(header => row[header]).join(';'));
+                });
+
+                const blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.setAttribute('href', url);
+                link.setAttribute('download', `oekolopoly_daten_runde_${state.round-1}.csv`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+
+            btnNext.addEventListener("click", advanceRound);
+            btnExport.addEventListener("click", exportHistoryToCSV);
+            btnRestart.addEventListener("click", initGame);
+            window.addEventListener('resize', drawChart);
+
+            initGame();
+
+        })();
+    </script>
+</body>
+</html>
