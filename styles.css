@@ -697,7 +697,13 @@ button:disabled {
   animation: effect-flow 1520ms linear infinite;
 }
 
-.effect-diagram .effect-flow-red {
+.effect-diagram .effect-flow-positive {
+  stroke: #008c3a;
+  stroke-width: 13;
+  stroke-dasharray: 34 30;
+}
+
+.effect-diagram .effect-flow-negative {
   stroke: var(--red);
   stroke-width: 13;
   stroke-dasharray: 34 30;
@@ -735,6 +741,19 @@ button:disabled {
 .effect-meter-fill {
   stroke: rgba(0, 0, 0, 0.28);
   stroke-width: 2;
+}
+
+.effect-meter-fill.is-changing {
+  stroke-width: 4;
+  filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.7));
+}
+
+.effect-meter-fill.is-rising {
+  stroke: #008c3a;
+}
+
+.effect-meter-fill.is-falling {
+  stroke: #d32921;
 }
 
 .fill-red {

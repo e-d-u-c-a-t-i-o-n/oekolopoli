@@ -6,14 +6,6 @@ Ein kompakter JavaScript-Prototyp fuer ein Oekolopoly-inspiriertes Simulationssp
 
 Die App ist bewusst ohne Build-System gebaut. `index.html` kann direkt im Browser geoeffnet werden.
 
-Optional per lokalem Server:
-
-```powershell
-python -m http.server 5173
-```
-
-Dann `http://localhost:5173` oeffnen.
-
 ## Struktur
 
 - `index.html` - Einstiegspunkt

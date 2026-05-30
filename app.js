@@ -347,6 +347,7 @@
       ? `${state.activeStep.from}->${state.activeStep.to}`
       : "";
     const activePath = arrowPaths[activeRelation];
+    const activeFlowTone = state.activeStep && state.activeStep.delta >= 0 ? "positive" : "negative";
 
     return `
       <div class="retro-board effects-board">
@@ -360,7 +361,7 @@
             <path class="effect-line ${activeRelation === key ? "active" : ""}" data-relation="${key}" d="${arrowPaths[key]}"></path>
           `).join("")}
           ${activePath ? `
-            <path class="effect-flow effect-flow-red" d="${activePath}"></path>
+            <path class="effect-flow effect-flow-${activeFlowTone}" d="${activePath}"></path>
             <path class="effect-flow effect-flow-white" d="${activePath}"></path>
           ` : ""}
           ${metrics.map(renderEffectNode).join("")}
@@ -373,11 +374,24 @@
     const node = effectNodes[metric.key];
     const value = state.values[metric.key];
     const percent = normalizedValue(metric.key, value);
+    const activeMetricStep = state.activeStep && state.activeStep.to === metric.key && Number.isFinite(state.activeStep.fromValue)
+      ? state.activeStep
+      : null;
+    const fromPercent = activeMetricStep
+      ? normalizedValue(metric.key, activeMetricStep.fromValue)
+      : percent;
     const [meterX, meterY, meterW, meterH] = node.meter;
     const [labelX, labelY, labelW, labelH] = node.label;
     const [valueX, valueY] = node.value;
     const fillHeight = Math.max(4, (meterH - 8) * percent / 100);
     const fillY = meterY + meterH - 4 - fillHeight;
+    const fromFillHeight = Math.max(4, (meterH - 8) * fromPercent / 100);
+    const fromFillY = meterY + meterH - 4 - fromFillHeight;
+    const fillClass = activeMetricStep ? `is-changing ${activeMetricStep.delta >= 0 ? "is-rising" : "is-falling"}` : "";
+    const fillAnimation = activeMetricStep ? `
+      <animate attributeName="y" from="${fromFillY}" to="${fillY}" dur="1.25s" fill="freeze"></animate>
+      <animate attributeName="height" from="${fromFillHeight}" to="${fillHeight}" dur="1.25s" fill="freeze"></animate>
+    ` : "";
     const tickLines = [0.2, 0.4, 0.6, 0.8].map((tick) => {
       const y = meterY + meterH * tick;
       return `<line class="effect-meter-tick" x1="${meterX}" y1="${y}" x2="${meterX + meterW}" y2="${y}"></line>`;
@@ -387,7 +401,9 @@
       <g class="effect-node node-${metric.key}">
         <rect class="effect-meter-shell" x="${meterX}" y="${meterY}" width="${meterW}" height="${meterH}"></rect>
         ${tickLines}
-        <rect class="effect-meter-fill fill-${metric.color}" x="${meterX + 5}" y="${fillY}" width="${meterW - 10}" height="${fillHeight}"></rect>
+        <rect class="effect-meter-fill fill-${metric.color} ${fillClass}" x="${meterX + 5}" y="${fillY}" width="${meterW - 10}" height="${fillHeight}">
+          ${fillAnimation}
+        </rect>
         <rect class="effect-label-box" x="${labelX}" y="${labelY}" width="${labelW}" height="${labelH}"></rect>
         <text class="effect-label-text" x="${labelX + 14}" y="${labelY + 33}">${escapeHtml(metric.label)}</text>
         <text class="effect-value-text" x="${valueX}" y="${valueY}">${Math.round(value)}</text>
@@ -566,7 +582,11 @@
       }
 
       const metric = metricByKey[step.to];
-      state.values[step.to] = clamp(state.values[step.to] + step.delta, 0, metric.max);
+      const fromValue = state.values[step.to];
+      const toValue = clamp(fromValue + step.delta, 0, metric.max);
+      step.fromValue = fromValue;
+      step.toValue = toValue;
+      state.values[step.to] = toValue;
       state.activeStep = step;
       sim.index += 1;
       render();
@@ -748,8 +768,10 @@
       state.activeStep = {
         from: "lebensqualitaet",
         to: "lebensqualitaet",
-        delta: curves["f10-Lebensqualitaet-auf-Lebensqualitaet"](state.values.lebensqualitaet),
-        title: "f10-Lebensqualitaet-auf-Lebensqualitaet"
+        delta: 2,
+        title: "f10-Lebensqualitaet-auf-Lebensqualitaet",
+        fromValue: state.values.lebensqualitaet - 2,
+        toValue: state.values.lebensqualitaet
       };
       state.running = true;
       state.paused = true;
