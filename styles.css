@@ -633,10 +633,12 @@ button:disabled {
 
 .station-controls {
   position: absolute;
-  right: 6px;
-  bottom: 28px;
+  left: 40px;
+  top: 50%;
   display: flex;
   gap: 6px;
+  transform: translateY(-50%);
+  z-index: 3;
 }
 
 .station-controls button {
