@@ -90,6 +90,14 @@ button:disabled {
   text-shadow: 0 3px 0 rgba(0, 0, 0, 0.45);
 }
 
+.intro-screen .kicker {
+  color: #fff46a;
+}
+
+.intro-screen button {
+  background: #fff46a;
+}
+
 .kicker {
   margin: 0 0 10px;
   color: #8bf9ff;
@@ -184,7 +192,7 @@ button:disabled {
 }
 
 .scenario-option input:checked + span {
-  background: var(--cyan);
+  background: #fff46a;
   color: var(--ink);
   transform: translate(2px, 2px);
   box-shadow: 2px 2px 0 var(--line);
@@ -202,13 +210,13 @@ button:disabled {
   padding: 12px;
   border: 3px solid var(--line);
   border-radius: 8px;
-  background: linear-gradient(rgba(185, 204, 190, 0.94), rgba(13, 146, 58, 0.9));
-  color: #fff;
-  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.55);
+  background: linear-gradient(rgba(255, 250, 190, 0.96), rgba(205, 164, 56, 0.92));
+  color: var(--ink);
+  text-shadow: none;
 }
 
 .scenario-preview strong {
-  color: #fff46a;
+  color: #7a3200;
   font-size: 1.05rem;
   text-transform: uppercase;
 }
@@ -231,7 +239,7 @@ button:disabled {
   gap: 8px;
   min-width: 0;
   padding-bottom: 2px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.62);
+  border-bottom: 1px solid rgba(70, 44, 0, 0.42);
 }
 
 .scenario-preview dt {
@@ -245,7 +253,7 @@ button:disabled {
   min-width: 34px;
   margin: 0;
   padding: 1px 5px;
-  background: #aebdca;
+  background: #fff2a8;
   color: #000;
   text-align: right;
   text-shadow: none;
