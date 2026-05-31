@@ -5,6 +5,276 @@
   const app = document.getElementById("app");
 
   const MAX_ROUNDS = 12;
+  const DEFAULT_LANGUAGE = "de";
+  const languageOptions = {
+    de: { code: "DE", label: "Deutsch", htmlLang: "de" },
+    el: { code: "EL", label: "Ελληνικά", htmlLang: "el" }
+  };
+
+  const translations = {
+    de: {
+      languageLabel: "Sprache",
+      metrics: {
+        politik: "Politik",
+        sanierung: "Sanierung",
+        produktion: "Produktion",
+        umweltbelastung: "Umweltbelastung",
+        bevoelkerung: "Bevölkerung",
+        vermehrungsrate: "Vermehrungsrate",
+        lebensqualitaet: "Lebensqualität",
+        aufklaerung: "Aufklärung"
+      },
+      metricShort: {
+        lebensqualitaet: "Lebensqual.",
+        aufklaerung: "Aufklärung"
+      },
+      scenarios: {
+        industrieland: {
+          label: "Industrieland",
+          description: "Hohe Produktion, bessere Aufklärung, spürbare Umweltbelastung."
+        },
+        schwellenland: {
+          label: "Schwellenland",
+          description: "Die Ausgangslage ist angespannt, aber noch gestaltbar."
+        },
+        entwicklungsland: {
+          label: "Entwicklungsland",
+          description: "Wenig Produktion, niedrige Lebensqualität, hohes Bevölkerungswachstum."
+        }
+      },
+      scenarioPreview: {
+        sanierung: "Sanierung",
+        produktion: "Produktion",
+        umweltbelastung: "Umweltbelastung",
+        aufklaerung: "Aufklärung",
+        lebensqualitaet: "Lebensqualität",
+        vermehrungsrate: "Vermehrungsrate",
+        bevoelkerung: "Bevölkerung",
+        politik: "Politik",
+        actionPoints: "Aktionspunkte"
+      },
+      intro: {
+        kicker: "Regierungsauftrag",
+        description: "Du übernimmst ein erschöpftes Land: Industrie läuft, Flüsse kippen, die Bevölkerung wächst und das Vertrauen in die Politik ist niedrig. Du hast 12 Jahre Zeit, die Lage zu stabilisieren.",
+        leaderName: "Name des Regierungschefs",
+        namePlaceholder: "Dein Name",
+        startTerm: "Amtszeit beginnen",
+        chooseScenario: "Ausgangslage wählen"
+      },
+      defaults: {
+        leaderName: "Regierungschef",
+        debugLeader: "Testregierung"
+      },
+      header: {
+        roundTitle: (name, round, maxRounds) => `${name}, Jahr ${round} von ${maxRounds}`,
+        reset: "Reset",
+        actionPoints: "Aktionspunkte",
+        switchView: "Ansicht wechseln",
+        startRound: "Runde starten",
+        fastForward: "Runde sofort berechnen",
+        start: "Start",
+        immediately: "Sofort"
+      },
+      views: {
+        control: "Stellwerk",
+        effects: "Wirkung",
+        state: "Zustand anschauen"
+      },
+      controls: {
+        increase: (label) => `${label} erhöhen`,
+        decrease: (label) => `${label} senken`
+      },
+      plots: {
+        aria: (label) => `Verlauf ${label}`,
+        showImage: (label) => `${label}: Bild anzeigen`,
+        showPlot: (label) => `${label}: Verlauf anzeigen`
+      },
+      effects: {
+        aria: "Wirkungsketten"
+      },
+      bottom: {
+        allocatedActionPoints: "Vergebene Aktionspunkte",
+        startRound: "Runde starten",
+        pause: "Pause",
+        continue: "Weiter"
+      },
+      result: {
+        kicker: (years) => `Abrechnung nach ${years} Jahren`,
+        newTerm: "Neue Amtszeit",
+        plotsAria: "Verlaufsplots"
+      },
+      messages: {
+        distributeAll: "Verteile alle Aktionspunkte und starte dann die Runde.",
+        allAllocated: "Alle Aktionspunkte sind vergeben. Die Runde kann starten.",
+        controlView: "Im Stellwerk kannst du Aktionspunkte vergeben.",
+        effectsView: "Hier siehst du die Wirkungsketten deiner Entscheidungen.",
+        allocateBeforeStart: "Bitte vergib alle Aktionspunkte, bevor du die Runde startest.",
+        effectsRunning: "Die Wirkungskette läuft. Der Umschalter ist bis zum Ende gesperrt.",
+        allocateBeforeFastForward: "Bitte vergib alle Aktionspunkte, bevor du die Runde sofort berechnest.",
+        yearActionPoints: (round, points) => `Jahr ${round}: Dir stehen ${points} Aktionspunkte zur Verfügung.`,
+        paused: "Simulation pausiert.",
+        runningAgain: "Die Wirkungskette läuft weiter.",
+        initialActionPoints: (points) => `Du hast am Anfang ${points} Aktionspunkte. Verteile sie im Stellwerk.`,
+        debugFlow: "Debugansicht: aktive Wirkung Lebensqualität.",
+        debugEffects: "Debugansicht: Wirkungsketten ohne laufende Simulation.",
+        debugControl: "Debugansicht: Stellwerk bereit."
+      },
+      simulation: {
+        controlTitle: "Stellwerk",
+        direct: (label) => `${label} wird direkt gestellt`,
+        affects: (from, to) => `${from} wirkt auf ${to}`
+      },
+      evaluation: {
+        dismissed: {
+          title: "Abgesetzt",
+          text: "Die politische Unterstützung ist unter null gefallen. Das Parlament entzieht dir das Mandat, bevor die 12 Jahre vorbei sind."
+        },
+        stable: {
+          title: "Stabile Wende",
+          text: "Das Land hat sich spürbar erholt. Die Bevölkerung trägt den Kurs mit, die Umweltbelastung sinkt und die Handlungsfähigkeit bleibt erhalten."
+        },
+        shaky: {
+          title: "Wacklige Stabilisierung",
+          text: "Du hast das Land nicht verloren, aber die Systeme stehen weiter unter Druck. Einige Entscheidungen wirken erst in den nächsten Jahren richtig."
+        },
+        weak: {
+          title: "Zu wenig gegengesteuert",
+          text: "Die Lage bleibt kritisch. Produktion, Umwelt, Lebensqualität und Bevölkerung ziehen noch zu stark in verschiedene Richtungen."
+        }
+      }
+    },
+    el: {
+      languageLabel: "Γλώσσα",
+      metrics: {
+        politik: "Πολιτική",
+        sanierung: "Αποκατάσταση",
+        produktion: "Παραγωγή",
+        umweltbelastung: "Ρύπανση",
+        bevoelkerung: "Πληθυσμός",
+        vermehrungsrate: "Γεννήσεις",
+        lebensqualitaet: "Ποιότητα ζωής",
+        aufklaerung: "Παιδεία"
+      },
+      metricShort: {
+        lebensqualitaet: "Ποιότητα",
+        aufklaerung: "Παιδεία"
+      },
+      scenarios: {
+        industrieland: {
+          label: "Βιομηχανική χώρα",
+          description: "Υψηλή παραγωγή, καλύτερη παιδεία και αισθητή ρύπανση."
+        },
+        schwellenland: {
+          label: "Αναδυόμενη χώρα",
+          description: "Η αρχική κατάσταση είναι πιεσμένη, αλλά ακόμη διαχειρίσιμη."
+        },
+        entwicklungsland: {
+          label: "Αναπτυσσόμενη χώρα",
+          description: "Χαμηλή παραγωγή, χαμηλή ποιότητα ζωής και μεγάλη αύξηση πληθυσμού."
+        }
+      },
+      scenarioPreview: {
+        sanierung: "Αποκατάσταση",
+        produktion: "Παραγωγή",
+        umweltbelastung: "Ρύπανση",
+        aufklaerung: "Παιδεία",
+        lebensqualitaet: "Ποιότητα ζωής",
+        vermehrungsrate: "Γεννήσεις",
+        bevoelkerung: "Πληθυσμός",
+        politik: "Πολιτική",
+        actionPoints: "Πόντοι δράσης"
+      },
+      intro: {
+        kicker: "Κυβερνητική αποστολή",
+        description: "Αναλαμβάνεις μια εξαντλημένη χώρα: η βιομηχανία δουλεύει, τα ποτάμια καταρρέουν, ο πληθυσμός αυξάνεται και η εμπιστοσύνη στην πολιτική είναι χαμηλή. Έχεις 12 χρόνια για να σταθεροποιήσεις την κατάσταση.",
+        leaderName: "Όνομα αρχηγού κυβέρνησης",
+        namePlaceholder: "Το όνομά σου",
+        startTerm: "Έναρξη θητείας",
+        chooseScenario: "Επιλογή αρχικής κατάστασης"
+      },
+      defaults: {
+        leaderName: "Αρχηγός κυβέρνησης",
+        debugLeader: "Δοκιμαστική κυβέρνηση"
+      },
+      header: {
+        roundTitle: (name, round, maxRounds) => `${name}, έτος ${round} από ${maxRounds}`,
+        reset: "Επαναφορά",
+        actionPoints: "Πόντοι δράσης",
+        switchView: "Αλλαγή προβολής",
+        startRound: "Έναρξη γύρου",
+        fastForward: "Άμεσος υπολογισμός γύρου",
+        start: "Start",
+        immediately: "Άμεσα"
+      },
+      views: {
+        control: "Πίνακας",
+        effects: "Επίδραση",
+        state: "Κατάσταση"
+      },
+      controls: {
+        increase: (label) => `Αύξηση: ${label}`,
+        decrease: (label) => `Μείωση: ${label}`
+      },
+      plots: {
+        aria: (label) => `Πορεία: ${label}`,
+        showImage: (label) => `${label}: εμφάνιση εικόνας`,
+        showPlot: (label) => `${label}: εμφάνιση πορείας`
+      },
+      effects: {
+        aria: "Αλυσίδες επιδράσεων"
+      },
+      bottom: {
+        allocatedActionPoints: "Κατανεμημένοι πόντοι δράσης",
+        startRound: "Έναρξη γύρου",
+        pause: "Παύση",
+        continue: "Συνέχεια"
+      },
+      result: {
+        kicker: (years) => `Απολογισμός μετά από ${years} έτη`,
+        newTerm: "Νέα θητεία",
+        plotsAria: "Διαγράμματα πορείας"
+      },
+      messages: {
+        distributeAll: "Μοίρασε όλους τους πόντους δράσης και μετά ξεκίνησε τον γύρο.",
+        allAllocated: "Όλοι οι πόντοι δράσης μοιράστηκαν. Ο γύρος μπορεί να ξεκινήσει.",
+        controlView: "Στον πίνακα μπορείς να μοιράσεις πόντους δράσης.",
+        effectsView: "Εδώ βλέπεις τις αλυσίδες επιδράσεων των αποφάσεών σου.",
+        allocateBeforeStart: "Μοίρασε όλους τους πόντους δράσης πριν ξεκινήσεις τον γύρο.",
+        effectsRunning: "Η αλυσίδα επιδράσεων τρέχει. Η αλλαγή προβολής είναι κλειδωμένη ως το τέλος.",
+        allocateBeforeFastForward: "Μοίρασε όλους τους πόντους δράσης πριν κάνεις άμεσο υπολογισμό.",
+        yearActionPoints: (round, points) => `Έτος ${round}: έχεις ${points} πόντους δράσης στη διάθεσή σου.`,
+        paused: "Η προσομοίωση έχει παύσει.",
+        runningAgain: "Η αλυσίδα επιδράσεων συνεχίζεται.",
+        initialActionPoints: (points) => `Στην αρχή έχεις ${points} πόντους δράσης. Μοίρασέ τους στον πίνακα.`,
+        debugFlow: "Προβολή δοκιμής: ενεργή επίδραση στην ποιότητα ζωής.",
+        debugEffects: "Προβολή δοκιμής: αλυσίδες επιδράσεων χωρίς προσομοίωση.",
+        debugControl: "Προβολή δοκιμής: ο πίνακας είναι έτοιμος."
+      },
+      simulation: {
+        controlTitle: "Πίνακας",
+        direct: (label) => `Άμεση ρύθμιση: ${label}`,
+        affects: (from, to) => `${from} επηρεάζει ${to}`
+      },
+      evaluation: {
+        dismissed: {
+          title: "Καθαίρεση",
+          text: "Η πολιτική στήριξη έπεσε κάτω από το μηδέν. Το κοινοβούλιο σου αφαιρεί την εντολή πριν περάσουν τα 12 χρόνια."
+        },
+        stable: {
+          title: "Σταθερή στροφή",
+          text: "Η χώρα έχει ανακάμψει αισθητά. Ο πληθυσμός στηρίζει την πορεία, η ρύπανση μειώνεται και η ικανότητα δράσης διατηρείται."
+        },
+        shaky: {
+          title: "Εύθραυστη σταθεροποίηση",
+          text: "Δεν έχασες τη χώρα, αλλά τα συστήματα παραμένουν υπό πίεση. Μερικές αποφάσεις θα φανούν πραγματικά τα επόμενα χρόνια."
+        },
+        weak: {
+          title: "Ανεπαρκής αντίδραση",
+          text: "Η κατάσταση παραμένει κρίσιμη. Παραγωγή, περιβάλλον, ποιότητα ζωής και πληθυσμός τραβούν ακόμη προς διαφορετικές κατευθύνσεις."
+        }
+      }
+    }
+  };
 
   const metrics = [
     { key: "politik", label: "Politik", max: 32, color: "red", x: 3, y: 7, w: 20, h: 27, art: "parliament", image: "assets/images/metric-politik.png" },
@@ -100,9 +370,11 @@
     "bevoelkerung->lebensqualitaet": "M144 590 L144 480 L545 480 L545 545 L650 545"
   };
 
+  const initialLanguageValue = initialLanguage();
   const state = {
     screen: "intro",
     view: "control",
+    language: initialLanguageValue,
     leaderName: "",
     scenarioKey: "industrieland",
     round: 1,
@@ -110,7 +382,7 @@
     running: false,
     paused: false,
     resultReason: "",
-    message: "Verteile alle Aktionspunkte und starte dann die Runde.",
+    message: i18n(initialLanguageValue).messages.distributeAll,
     activeStep: null,
     simulation: null,
     showPlots: false,
@@ -121,6 +393,54 @@
   };
 
   let timer = null;
+  applyLanguage();
+
+  function initialLanguage() {
+    try {
+      const savedLanguage = window.localStorage.getItem("oekolopoly-language");
+      if (languageOptions[savedLanguage]) return savedLanguage;
+    } catch (error) {
+      return DEFAULT_LANGUAGE;
+    }
+
+    return DEFAULT_LANGUAGE;
+  }
+
+  function i18n(language) {
+    return translations[language] || translations[DEFAULT_LANGUAGE];
+  }
+
+  function text() {
+    return i18n(state.language);
+  }
+
+  function persistLanguage() {
+    try {
+      window.localStorage.setItem("oekolopoly-language", state.language);
+    } catch (error) {
+      // Language selection should still work when storage is unavailable.
+    }
+  }
+
+  function applyLanguage() {
+    const language = languageOptions[state.language] ? state.language : DEFAULT_LANGUAGE;
+    document.documentElement.lang = languageOptions[language].htmlLang;
+  }
+
+  function syncLeaderNameInput() {
+    const nameInput = app.querySelector("input[name='leaderName']");
+    if (nameInput) state.leaderName = nameInput.value;
+  }
+
+  function setLanguage(language) {
+    if (!languageOptions[language]) return;
+
+    syncLeaderNameInput();
+    state.language = language;
+    applyLanguage();
+    persistLanguage();
+    render();
+  }
 
   function initialValues(scenarioKey) {
     const scenario = scenarios[scenarioKey] || scenarios.schwellenland;
@@ -168,15 +488,22 @@
   }
 
   function metricLabel(key) {
-    return metricByKey[key] ? metricByKey[key].label : key;
+    const labels = text().metrics;
+    return labels[key] || (metricByKey[key] ? metricByKey[key].label : key);
   }
 
   function consoleLabel(key) {
-    const labels = {
-      lebensqualitaet: "Lebensqual.",
-      aufklaerung: "Aufklärung"
-    };
-    return labels[key] || metricLabel(key);
+    return text().metricShort[key] || metricLabel(key);
+  }
+
+  function scenarioLabel(key) {
+    const scenario = text().scenarios[key];
+    return scenario ? scenario.label : scenarios[key].label;
+  }
+
+  function scenarioDescription(key) {
+    const scenario = text().scenarios[key];
+    return scenario ? scenario.description : scenarios[key].description;
   }
 
   function normalizedValue(key, value) {
@@ -223,6 +550,7 @@
   }
 
   function renderStationPlot(metric) {
+    const label = metricLabel(metric.key);
     const points = metricHistoryPoints(metric);
     const plot = {
       left: 28,
@@ -244,7 +572,7 @@
     const currentValue = points.length ? Math.round(points[points.length - 1].value) : Math.round(state.values[metric.key]);
 
     return `
-      <svg class="station-plot" viewBox="0 0 280 144" role="img" aria-label="Verlauf ${metric.label}">
+      <svg class="station-plot" viewBox="0 0 280 144" role="img" aria-label="${text().plots.aria(label)}">
         <rect class="plot-panel" x="1" y="1" width="278" height="142"></rect>
         ${Array.from({ length: MAX_ROUNDS * 2 + 1 }, (_, step) => {
           const x = xForStep(step);
@@ -283,33 +611,58 @@
     renderGame();
   }
 
+  function renderLanguageSelector(placement) {
+    const modifier = placement ? ` language-switcher-${placement}` : "";
+    const name = `language-${placement || "main"}`;
+    const label = text().languageLabel;
+
+    return `
+      <fieldset class="language-switcher${modifier}" aria-label="${label}">
+        <legend>${label}</legend>
+        ${Object.keys(languageOptions).map((key) => {
+          const option = languageOptions[key];
+          const checked = key === state.language ? "checked" : "";
+
+          return `
+            <label>
+              <input type="radio" name="${name}" value="${key}" data-language-option ${checked}>
+              <span>
+                <strong>${option.code}</strong>
+                <small>${option.label}</small>
+              </span>
+            </label>
+          `;
+        }).join("")}
+      </fieldset>
+    `;
+  }
+
   function renderIntro() {
     const selectedScenario = scenarios[state.scenarioKey] || scenarios.schwellenland;
+    const selectedScenarioKey = scenarios[state.scenarioKey] ? state.scenarioKey : "schwellenland";
+    const copy = text().intro;
 
     app.innerHTML = `
       <section class="intro-screen" data-scenario="${state.scenarioKey}">
         <div class="intro-shade"></div>
+        ${renderLanguageSelector("intro")}
         <div class="intro-copy">
-          <p class="kicker">Regierungsauftrag</p>
+          <p class="kicker">${copy.kicker}</p>
           <h1>Ökolopoly</h1>
-          <p>
-            Du übernimmst ein erschöpftes Land: Industrie läuft,
-            Flüsse kippen, die Bevölkerung wächst und das Vertrauen in die Politik ist niedrig.
-            Du hast 12 Jahre Zeit, die Lage zu stabilisieren.
-          </p>
+          <p>${copy.description}</p>
           <form class="name-form" data-action="start-game">
-            <label for="leader-name">Name des Regierungschefs</label>
+            <label for="leader-name">${copy.leaderName}</label>
             <div class="name-row">
-              <input id="leader-name" name="leaderName" maxlength="28" autocomplete="off" placeholder="Dein Name" value="${escapeHtml(state.leaderName)}">
-              <button type="submit">Amtszeit beginnen</button>
+              <input id="leader-name" name="leaderName" maxlength="28" autocomplete="off" placeholder="${copy.namePlaceholder}" value="${escapeHtml(state.leaderName)}">
+              <button type="submit">${copy.startTerm}</button>
             </div>
             <fieldset class="scenario-picker">
-              <legend>Ausgangslage wählen</legend>
+              <legend>${copy.chooseScenario}</legend>
               ${Object.keys(scenarios).map((key) => renderScenarioOption(key)).join("")}
             </fieldset>
             <div class="scenario-preview">
-              <strong>${selectedScenario.label}</strong>
-              <span>${selectedScenario.description}</span>
+              <strong>${scenarioLabel(selectedScenarioKey)}</strong>
+              <span>${scenarioDescription(selectedScenarioKey)}</span>
               <dl>
                 ${renderScenarioPreviewRows(selectedScenario)}
               </dl>
@@ -321,28 +674,28 @@
   }
 
   function renderScenarioOption(key) {
-    const scenario = scenarios[key];
     const checked = key === state.scenarioKey ? "checked" : "";
 
     return `
       <label class="scenario-option">
         <input type="radio" name="scenario" value="${key}" ${checked}>
-        <span>${scenario.label}</span>
+        <span>${scenarioLabel(key)}</span>
       </label>
     `;
   }
 
   function renderScenarioPreviewRows(scenario) {
+    const labels = text().scenarioPreview;
     const previewRows = [
-      ["Sanierung", scenario.values.sanierung],
-      ["Produktion", scenario.values.produktion],
-      ["Umweltbelastung", scenario.values.umweltbelastung],
-      ["Aufklärung", scenario.values.aufklaerung],
-      ["Lebensqualität", scenario.values.lebensqualitaet],
-      ["Vermehrungsrate", scenario.values.vermehrungsrate],
-      ["Bevölkerung", scenario.values.bevoelkerung],
-      ["Politik", scenario.values.politik],
-      ["Aktionspunkte", scenario.actionPoints]
+      [labels.sanierung, scenario.values.sanierung],
+      [labels.produktion, scenario.values.produktion],
+      [labels.umweltbelastung, scenario.values.umweltbelastung],
+      [labels.aufklaerung, scenario.values.aufklaerung],
+      [labels.lebensqualitaet, scenario.values.lebensqualitaet],
+      [labels.vermehrungsrate, scenario.values.vermehrungsrate],
+      [labels.bevoelkerung, scenario.values.bevoelkerung],
+      [labels.politik, scenario.values.politik],
+      [labels.actionPoints, scenario.actionPoints]
     ];
 
     return previewRows.map(([label, value]) => `
@@ -365,7 +718,8 @@
   }
 
   function renderHeader() {
-    const viewLabel = state.view === "control" ? "Wirkung" : "Stellwerk";
+    const copy = text();
+    const viewLabel = state.view === "control" ? copy.views.effects : copy.views.control;
     const viewIcon = state.view === "control" ? "⇄" : "▦";
     const disabled = state.running ? "disabled" : "";
     const left = remainingActionPoints();
@@ -376,29 +730,29 @@
       <header class="topline">
         <div class="top-title">
           <p class="system-name">Ökolopoly</p>
-          <h2>${escapeHtml(state.leaderName)}, Jahr ${state.round} von ${MAX_ROUNDS}</h2>
+          <h2>${copy.header.roundTitle(escapeHtml(state.leaderName), state.round, MAX_ROUNDS)}</h2>
           <p class="top-hint">${escapeHtml(state.message)}</p>
         </div>
         <div class="top-actions">
-          <button class="icon-button quiet" data-action="restart" title="Reset" aria-label="Reset">
+          <button class="icon-button quiet" data-action="restart" title="${copy.header.reset}" aria-label="${copy.header.reset}">
             <span>↺</span>
-            <small>Reset</small>
+            <small>${copy.header.reset}</small>
           </button>
-          <div class="top-ap-compact" aria-label="Verbleibende Aktionspunkte">
-            <span>Aktionspunkte</span>
+          <div class="top-ap-compact" aria-label="${copy.header.actionPoints}">
+            <span>${copy.header.actionPoints}</span>
             <output>${left}</output>
           </div>
-          <button class="icon-button" data-action="toggle-view" ${disabled} title="Ansicht wechseln" aria-label="Ansicht wechseln">
+          <button class="icon-button" data-action="toggle-view" ${disabled} title="${copy.header.switchView}" aria-label="${copy.header.switchView}">
             <span>${viewIcon}</span>
             <small>${viewLabel}</small>
           </button>
-          <button class="icon-button play-button" data-action="start-simulation" ${startDisabled} title="Runde starten" aria-label="Runde starten">
+          <button class="icon-button play-button" data-action="start-simulation" ${startDisabled} title="${copy.header.startRound}" aria-label="${copy.header.startRound}">
             <span>▶</span>
-            <small>Start</small>
+            <small>${copy.header.start}</small>
           </button>
-          <button class="icon-button fast-forward-button" data-action="fast-forward" ${fastForwardDisabled} title="Runde sofort berechnen" aria-label="Runde sofort berechnen">
+          <button class="icon-button fast-forward-button" data-action="fast-forward" ${fastForwardDisabled} title="${copy.header.fastForward}" aria-label="${copy.header.fastForward}">
             <span>&gt;&gt;</span>
-            <small>Sofort</small>
+            <small>${copy.header.immediately}</small>
           </button>
         </div>
       </header>
@@ -468,33 +822,34 @@
   }
 
   function renderStation(metric) {
+    const label = metricLabel(metric.key);
     const value = state.values[metric.key];
     const percent = normalizedValue(metric.key, value);
     const planned = state.allocations[metric.key] || 0;
     const controlClass = metric.control ? "is-adjustable" : "";
     const isPlotVisible = state.showPlots;
     const artLabel = isPlotVisible
-      ? `${metric.label}: Bild anzeigen`
-      : `${metric.label}: Verlauf anzeigen`;
+      ? text().plots.showImage(label)
+      : text().plots.showPlot(label);
     const controls = metric.control && !state.running
       ? `
         <div class="station-controls">
-          <button data-action="adjust" data-key="${metric.key}" data-delta="1" aria-label="${metric.label} erhöhen">+</button>
-          <button data-action="adjust" data-key="${metric.key}" data-delta="-1" aria-label="${metric.label} senken">&minus;</button>
+          <button data-action="adjust" data-key="${metric.key}" data-delta="1" aria-label="${text().controls.increase(label)}">+</button>
+          <button data-action="adjust" data-key="${metric.key}" data-delta="-1" aria-label="${text().controls.decrease(label)}">&minus;</button>
         </div>
       `
       : "";
 
     return `
       <article class="station ${controlClass} station-${metric.art}" style="left:${metric.x}%; top:${metric.y}%; width:${metric.w}%; height:${metric.h}%;">
-        <div class="meter meter-${metric.color}" aria-label="${metric.label}: ${Math.round(value)}">
+        <div class="meter meter-${metric.color}" aria-label="${label}: ${Math.round(value)}">
           <div class="meter-fill" style="height:${percent}%"></div>
           <span class="meter-value">${Math.round(value)}</span>
         </div>
         <button class="station-art station-art-button ${isPlotVisible ? "is-plot-visible" : ""}" data-action="toggle-plot" data-key="${metric.key}" aria-label="${artLabel}">
           ${isPlotVisible ? renderStationPlot(metric) : renderMetricIcon(metric)}
         </button>
-        <h3>${metric.label}</h3>
+        <h3>${label}</h3>
         ${planned ? `<div class="planned">${signed(planned)}</div>` : ""}
         ${controls}
       </article>
@@ -510,7 +865,7 @@
 
     return `
       <div class="retro-board effects-board">
-        <svg class="effect-diagram" viewBox="0 0 1403 790" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Wirkungsketten">
+        <svg class="effect-diagram" viewBox="0 0 1403 790" preserveAspectRatio="xMidYMid meet" role="img" aria-label="${text().effects.aria}">
           <defs>
             <marker id="arrow-head" viewBox="0 0 34 34" refX="32" refY="17" markerWidth="34" markerHeight="34" markerUnits="userSpaceOnUse" orient="auto-start-reverse">
               <path d="M 1 1 L 33 17 L 1 33 z"></path>
@@ -531,6 +886,7 @@
 
   function renderEffectNode(metric) {
     const node = effectNodes[metric.key];
+    const label = metricLabel(metric.key);
     const value = state.values[metric.key];
     const percent = normalizedValue(metric.key, value);
     const activeMetricStep = state.activeStep && state.activeStep.to === metric.key && Number.isFinite(state.activeStep.fromValue)
@@ -564,17 +920,18 @@
           ${fillAnimation}
         </rect>
         <rect class="effect-label-box" x="${labelX}" y="${labelY}" width="${labelW}" height="${labelH}" rx="12" ry="12"></rect>
-        <text class="effect-label-text" x="${labelX + 14}" y="${labelY + 33}">${escapeHtml(metric.label)}</text>
+        <text class="effect-label-text" x="${labelX + 14}" y="${labelY + 33}">${escapeHtml(label)}</text>
         <text class="effect-value-text" x="${valueX}" y="${valueY}">${Math.round(value)}</text>
       </g>
     `;
   }
 
   function renderBottomBar() {
+    const copy = text();
     const left = remainingActionPoints();
     const startDisabled = state.running || left !== 0 ? "disabled" : "";
     const pauseDisabled = state.running ? "" : "disabled";
-    const bottomToggleLabel = state.view === "control" ? "Zustand anschauen" : "Stellwerk";
+    const bottomToggleLabel = state.view === "control" ? copy.views.state : copy.views.control;
     const activeText = state.activeStep
       ? renderDeltaBadge(state.activeStep.delta)
       : escapeHtml(state.message);
@@ -582,10 +939,10 @@
     return `
       <footer class="bottom-console">
         <section class="ap-display">
-          <h3>Aktionspunkte</h3>
+          <h3>${copy.header.actionPoints}</h3>
           <output>${left}</output>
         </section>
-        <section class="allocation-list" aria-label="Vergebene Aktionspunkte">
+        <section class="allocation-list" aria-label="${copy.bottom.allocatedActionPoints}">
           ${controlKeys.map((key) => `
             <div>
               <span>${consoleLabel(key)}</span>
@@ -598,44 +955,45 @@
         </section>
         <section class="round-actions">
           <button data-action="toggle-view" ${state.running ? "disabled" : ""}>${bottomToggleLabel}</button>
-          <button data-action="start-simulation" ${startDisabled}>Runde starten</button>
-          <button data-action="pause" ${pauseDisabled}>${state.paused ? "Weiter" : "Pause"}</button>
+          <button data-action="start-simulation" ${startDisabled}>${copy.bottom.startRound}</button>
+          <button data-action="pause" ${pauseDisabled}>${state.paused ? copy.bottom.continue : copy.bottom.pause}</button>
         </section>
       </footer>
     `;
   }
 
   function renderResult() {
+    const copy = text();
     const evaluation = evaluateGame();
     const resultOutcome = state.resultReason === "dismissed" ? "fail" : "success";
     app.innerHTML = `
       <section class="result-screen" data-scenario="${state.scenarioKey}" data-outcome="${resultOutcome}">
         <div class="result-panel">
           <div class="result-panel-top">
-            <p class="kicker">Abrechnung nach ${state.history.length} Jahren</p>
-            <button class="result-restart-top" data-action="restart">Neue Amtszeit</button>
+            <p class="kicker">${copy.result.kicker(state.history.length)}</p>
+            <button class="result-restart-top" data-action="restart">${copy.result.newTerm}</button>
           </div>
           <h1>${evaluation.title}</h1>
           <p>${evaluation.text}</p>
           <dl class="result-grid">
             ${metrics.map((metric) => `
               <div>
-                <dt>${metric.label}</dt>
+                <dt>${metricLabel(metric.key)}</dt>
                 <dd>${Math.round(state.values[metric.key])}</dd>
               </div>
             `).join("")}
           </dl>
-          <div class="result-plots" aria-label="Verlaufsplots">
+          <div class="result-plots" aria-label="${copy.result.plotsAria}">
             ${metrics.map((metric) => `
               <article class="result-plot-card">
-                <h2>${metric.label}</h2>
+                <h2>${metricLabel(metric.key)}</h2>
                 <div class="result-plot-frame">
                   ${renderStationPlot(metric)}
                 </div>
               </article>
             `).join("")}
           </div>
-          <button data-action="restart">Neue Amtszeit</button>
+          <button data-action="restart">${copy.result.newTerm}</button>
         </div>
       </section>
     `;
@@ -662,8 +1020,8 @@
 
     state.allocations = nextAllocations;
     state.message = remainingActionPoints() === 0
-      ? "Alle Aktionspunkte sind vergeben. Die Runde kann starten."
-      : "Verteile alle Aktionspunkte und starte dann die Runde.";
+      ? text().messages.allAllocated
+      : text().messages.distributeAll;
     render();
   }
 
@@ -671,8 +1029,8 @@
     if (state.running) return;
     state.view = state.view === "control" ? "effects" : "control";
     state.message = state.view === "control"
-      ? "Im Stellwerk kannst du Aktionspunkte vergeben."
-      : "Hier siehst du die Wirkungsketten deiner Entscheidungen.";
+      ? text().messages.controlView
+      : text().messages.effectsView;
     render();
   }
 
@@ -680,7 +1038,7 @@
     if (state.running) return;
 
     if (remainingActionPoints() !== 0) {
-      state.message = "Bitte vergib alle Aktionspunkte, bevor du die Runde startest.";
+      state.message = text().messages.allocateBeforeStart;
       render();
       return;
     }
@@ -690,7 +1048,7 @@
     state.paused = false;
     state.activeStep = null;
     state.simulation = buildSimulation();
-    state.message = "Die Wirkungskette läuft. Der Umschalter ist bis zum Ende gesperrt.";
+    state.message = text().messages.effectsRunning;
     render();
     scheduleNextStep();
   }
@@ -698,7 +1056,7 @@
   function fastForwardSimulation() {
     if (!state.running) {
       if (remainingActionPoints() !== 0) {
-        state.message = "Bitte vergib alle Aktionspunkte, bevor du die Runde sofort berechnest.";
+        state.message = text().messages.allocateBeforeFastForward;
         render();
         return;
       }
@@ -730,8 +1088,8 @@
         from: null,
         to: key,
         delta,
-        title: "Stellwerk",
-        text: `${metricLabel(key)} wird direkt gestellt`
+        title: text().simulation.controlTitle,
+        text: text().simulation.direct(metricLabel(key))
       });
     });
 
@@ -750,7 +1108,7 @@
         delta,
         curveKey,
         title: curveKey,
-        text: `${metricLabel(from)} wirkt auf ${metricLabel(to)}`
+        text: text().simulation.affects(metricLabel(from), metricLabel(to))
       });
     });
 
@@ -830,7 +1188,7 @@
 
     state.round += 1;
     state.view = "control";
-    state.message = `Jahr ${state.round}: Dir stehen ${state.actionPoints} Aktionspunkte zur Verfügung.`;
+    state.message = text().messages.yearActionPoints(state.round, state.actionPoints);
     render();
   }
 
@@ -855,20 +1213,18 @@
     if (!state.running) return;
     state.paused = !state.paused;
     state.message = state.paused
-      ? "Simulation pausiert."
-      : "Die Wirkungskette läuft weiter.";
+      ? text().messages.paused
+      : text().messages.runningAgain;
     render();
     scheduleNextStep();
   }
 
   function evaluateGame() {
     const values = state.values;
+    const copy = text().evaluation;
 
     if (state.resultReason === "dismissed") {
-      return {
-        title: "Abgesetzt",
-        text: "Die politische Unterstützung ist unter null gefallen. Das Parlament entzieht dir das Mandat, bevor die 12 Jahre vorbei sind."
-      };
+      return copy.dismissed;
     }
 
     const score = values.politik + values.lebensqualitaet + values.sanierung + values.aufklaerung
@@ -876,23 +1232,14 @@
       + Math.max(0, 28 - values.vermehrungsrate);
 
     if (score >= 105) {
-      return {
-        title: "Stabile Wende",
-        text: "Das Land hat sich spürbar erholt. Die Bevölkerung trägt den Kurs mit, die Umweltbelastung sinkt und die Handlungsfähigkeit bleibt erhalten."
-      };
+      return copy.stable;
     }
 
     if (score >= 78) {
-      return {
-        title: "Wacklige Stabilisierung",
-        text: "Du hast das Land nicht verloren, aber die Systeme stehen weiter unter Druck. Einige Entscheidungen wirken erst in den nächsten Jahren richtig."
-      };
+      return copy.shaky;
     }
 
-    return {
-      title: "Zu wenig gegengesteuert",
-      text: "Die Lage bleibt kritisch. Produktion, Umwelt, Lebensqualität und Bevölkerung ziehen noch zu stark in verschiedene Richtungen."
-    };
+    return copy.weak;
   }
 
   function restart() {
@@ -904,7 +1251,7 @@
     state.running = false;
     state.paused = false;
     state.resultReason = "";
-    state.message = "Verteile alle Aktionspunkte und starte dann die Runde.";
+    state.message = text().messages.distributeAll;
     state.activeStep = null;
     state.simulation = null;
     state.showPlots = false;
@@ -922,7 +1269,7 @@
     event.preventDefault();
     const data = new FormData(form);
     const scenarioKey = String(data.get("scenario") || "schwellenland");
-    state.leaderName = String(data.get("leaderName") || "").trim() || "Regierungschef";
+    state.leaderName = String(data.get("leaderName") || "").trim() || text().defaults.leaderName;
     state.scenarioKey = scenarios[scenarioKey] ? scenarioKey : "schwellenland";
     state.actionPoints = initialActionPoints(state.scenarioKey);
     state.initialValues = initialValues(state.scenarioKey);
@@ -931,7 +1278,7 @@
     state.showPlots = false;
     state.screen = "game";
     state.view = "control";
-    state.message = `Du hast am Anfang ${state.actionPoints} Aktionspunkte. Verteile sie im Stellwerk.`;
+    state.message = text().messages.initialActionPoints(state.actionPoints);
     render();
   });
 
@@ -960,9 +1307,13 @@
   });
 
   app.addEventListener("change", (event) => {
+    if (event.target.matches("[data-language-option]")) {
+      setLanguage(event.target.value);
+      return;
+    }
+
     if (!event.target.matches("input[name='scenario']")) return;
-    const nameInput = app.querySelector("input[name='leaderName']");
-    if (nameInput) state.leaderName = nameInput.value;
+    syncLeaderNameInput();
     const scenarioKey = event.target.value;
     state.scenarioKey = scenarios[scenarioKey] ? scenarioKey : "schwellenland";
     render();
@@ -972,7 +1323,7 @@
     if (!["#play", "#effects", "#flow"].includes(window.location.hash)) return;
 
     state.screen = "game";
-    state.leaderName = "Testregierung";
+    state.leaderName = text().defaults.debugLeader;
     state.view = window.location.hash === "#play" ? "control" : "effects";
     if (window.location.hash === "#flow") {
       state.activeStep = {
@@ -987,10 +1338,10 @@
       state.paused = true;
     }
     state.message = window.location.hash === "#flow"
-      ? "Debugansicht: aktive Wirkung Lebensqualität."
+      ? text().messages.debugFlow
       : state.view === "effects"
-        ? "Debugansicht: Wirkungsketten ohne laufende Simulation."
-        : "Debugansicht: Stellwerk bereit.";
+        ? text().messages.debugEffects
+        : text().messages.debugControl;
   }
 
   bootDebugView();

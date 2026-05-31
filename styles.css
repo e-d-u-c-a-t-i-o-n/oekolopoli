@@ -194,6 +194,86 @@ button:disabled {
   color: #fff;
 }
 
+.language-switcher {
+  display: inline-grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+  min-inline-size: 0;
+  margin: 0;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: var(--soft-shadow);
+}
+
+.language-switcher-intro {
+  position: absolute;
+  z-index: 2;
+  top: clamp(18px, 3vw, 34px);
+  right: clamp(18px, 3vw, 34px);
+}
+
+.language-switcher legend {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.language-switcher label {
+  position: relative;
+  min-width: 0;
+}
+
+.language-switcher input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.language-switcher span {
+  display: grid;
+  min-width: 64px;
+  min-height: 52px;
+  place-items: center;
+  padding: 6px 9px;
+  border-radius: 12px;
+  color: var(--ink-soft);
+  cursor: pointer;
+  line-height: 1;
+  text-align: center;
+}
+
+.language-switcher strong {
+  color: inherit;
+  font-size: 0.95rem;
+  font-weight: 900;
+}
+
+.language-switcher small {
+  display: block;
+  margin-top: 4px;
+  color: currentColor;
+  font-size: 0.66rem;
+  font-weight: 900;
+  opacity: 0.78;
+  text-transform: uppercase;
+}
+
+.language-switcher input:checked + span {
+  background: linear-gradient(135deg, var(--blue), var(--cyan));
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(8, 185, 216, 0.18);
+}
+
+.language-switcher input:focus-visible + span {
+  outline: 3px solid rgba(8, 185, 216, 0.35);
+  outline-offset: 3px;
+}
+
 .scenario-picker {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1229,6 +1309,11 @@ button:disabled {
   .intro-screen {
     align-items: end;
     padding: 22px;
+  }
+
+  .language-switcher-intro {
+    top: 16px;
+    right: 16px;
   }
 
   .name-row,
