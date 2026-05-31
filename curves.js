@@ -135,8 +135,8 @@
     ], "step"),
 
     "f9-Aufklaerung-auf-Vermehrungsrate": makeCurve([
-      [0, 1], [2, 0], [10, 1], [15, 2], [20, 3],
-      [24, -3], [27, -4], [29, -5], [32, -5]
+      [0, 1], [2, 0], [8, 0], [10, -1], [14, -2],
+      [18, -3], [23, -4], [28, -5], [32, -5]
     ], "step"),
 
     "f10-Lebensqualitaet-auf-Lebensqualitaet": makeCurve([

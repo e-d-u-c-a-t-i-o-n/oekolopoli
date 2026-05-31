@@ -287,7 +287,7 @@
     const selectedScenario = scenarios[state.scenarioKey] || scenarios.schwellenland;
 
     app.innerHTML = `
-      <section class="intro-screen">
+      <section class="intro-screen" data-scenario="${state.scenarioKey}">
         <div class="intro-shade"></div>
         <div class="intro-copy">
           <p class="kicker">Regierungsauftrag</p>
@@ -866,7 +866,7 @@
     if (state.resultReason === "dismissed") {
       return {
         title: "Abgesetzt",
-        text: "Die politische Unterstützung ist auf null gefallen. Das Parlament entzieht dir das Mandat, bevor die 12 Jahre vorbei sind."
+        text: "Die politische Unterstützung ist unter null gefallen. Das Parlament entzieht dir das Mandat, bevor die 12 Jahre vorbei sind."
       };
     }
 
