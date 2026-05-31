@@ -407,6 +407,10 @@ button:disabled {
   background: #ffea50;
 }
 
+.fast-forward-button {
+  background: #ffe873;
+}
+
 .playfield {
   min-height: 0;
   display: grid;
@@ -822,15 +826,16 @@ button:disabled {
 
 .planned {
   position: absolute;
-  left: 2px;
-  bottom: 18px;
+  left: -2px;
+  bottom: 42px;
   min-width: 34px;
   padding: 2px 4px;
-  background: #fffdf2;
+  background: #ffea50;
   border: 2px solid var(--line);
   color: var(--blue);
   font-weight: 700;
   text-align: center;
+  z-index: 4;
 }
 
 .effects-board {

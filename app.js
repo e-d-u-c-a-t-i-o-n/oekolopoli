@@ -283,6 +283,7 @@
     const disabled = state.running ? "disabled" : "";
     const left = remainingActionPoints();
     const startDisabled = state.running || left !== 0 ? "disabled" : "";
+    const fastForwardDisabled = state.running || left === 0 ? "" : "disabled";
 
     return `
       <header class="topline">
@@ -307,6 +308,10 @@
           <button class="icon-button play-button" data-action="start-simulation" ${startDisabled} title="Runde starten" aria-label="Runde starten">
             <span>▶</span>
             <small>Start</small>
+          </button>
+          <button class="icon-button fast-forward-button" data-action="fast-forward" ${fastForwardDisabled} title="Runde sofort berechnen" aria-label="Runde sofort berechnen">
+            <span>&gt;&gt;</span>
+            <small>Sofort</small>
           </button>
         </div>
       </header>
@@ -532,6 +537,27 @@
     scheduleNextStep();
   }
 
+  function fastForwardSimulation() {
+    if (!state.running) {
+      if (remainingActionPoints() !== 0) {
+        state.message = "Bitte vergib alle Aktionspunkte, bevor du die Runde sofort berechnest.";
+        render();
+        return;
+      }
+
+      state.running = true;
+      state.paused = false;
+      state.activeStep = null;
+      state.simulation = buildSimulation();
+    }
+
+    if (!state.simulation) return;
+
+    clearTimeout(timer);
+    state.activeStep = null;
+    finishRound();
+  }
+
   function buildSimulation() {
     const draft = Object.assign({}, state.values);
     const steps = [];
@@ -754,6 +780,8 @@
       startSimulation();
     } else if (action === "pause") {
       togglePause();
+    } else if (action === "fast-forward") {
+      fastForwardSimulation();
     } else if (action === "restart") {
       restart();
     }
