@@ -30,7 +30,7 @@
       description: "Hohe Produktion, bessere Aufklärung, spürbare Umweltbelastung.",
       actionPoints: 8,
       values: {
-        politik: 0,
+        politik: 2,
         sanierung: 1,
         produktion: 9,
         umweltbelastung: 13,
@@ -45,7 +45,7 @@
       description: "Die Ausgangslage ist angespannt, aber noch gestaltbar.",
       actionPoints: 8,
       values: {
-        politik: 0,
+        politik: 2,
         sanierung: 1,
         produktion: 9,
         umweltbelastung: 17,
@@ -60,7 +60,7 @@
       description: "Wenig Produktion, niedrige Lebensqualität, hohes Bevölkerungswachstum.",
       actionPoints: 10,
       values: {
-        politik: -1,
+        politik: 2,
         sanierung: 2,
         produktion: 3,
         umweltbelastung: 14,
@@ -414,6 +414,81 @@
     `;
   }
 
+  function renderMetricIcon(metric) {
+    const icons = {
+      parliament: `
+        <path d="M13 28h38"></path>
+        <path d="M18 28v24M32 28v24M46 28v24"></path>
+        <path d="M10 52h44"></path>
+        <path d="M14 24 32 12l18 12"></path>
+      `,
+      fields: `
+        <path d="M13 50c14-22 25-32 39-34-2 16-11 29-33 38"></path>
+        <path d="M13 50c10-2 20-9 30-24"></path>
+        <path d="M15 51l-6 6"></path>
+      `,
+      factory: `
+        <path d="M11 50V25l14 8v-8l14 8V17h10v33"></path>
+        <path d="M11 50h42"></path>
+        <path d="M20 44h4M31 44h4M42 44h4"></path>
+      `,
+      dump: `
+        <path d="M15 48h34"></path>
+        <path d="M19 43c0-9 5-15 13-19 8 4 13 10 13 19"></path>
+        <path d="M32 24V10"></path>
+        <path d="M24 16h16"></path>
+        <path d="M19 54h26"></path>
+      `,
+      city: `
+        <circle cx="22" cy="22" r="8"></circle>
+        <circle cx="43" cy="24" r="6"></circle>
+        <path d="M9 52c2-10 7-16 13-16s11 6 13 16"></path>
+        <path d="M34 50c2-8 6-12 12-12 5 0 9 4 11 12"></path>
+      `,
+      home: `
+        <path d="M12 48 32 18l20 30"></path>
+        <path d="M20 48h24"></path>
+        <path d="M32 18v38"></path>
+      `,
+      park: `
+        <path d="M32 55s20-12 20-30a12 12 0 0 0-20-8 12 12 0 0 0-20 8c0 18 20 30 20 30Z"></path>
+      `,
+      school: `
+        <path d="M10 21 32 11l22 10-22 10-22-10Z"></path>
+        <path d="M18 27v14c8 6 20 6 28 0V27"></path>
+        <path d="M54 21v17"></path>
+      `
+    };
+
+    return `
+      <svg class="metric-icon" viewBox="0 0 64 64" aria-hidden="true">
+        ${icons[metric.art] || icons.fields}
+      </svg>
+    `;
+  }
+
+  function allocationSliderPercent(key, planned) {
+    const actionPoints = Math.max(1, state.actionPoints);
+
+    if (key === "produktion") {
+      return clamp(((planned + actionPoints) / (actionPoints * 2)) * 100, 0, 100);
+    }
+
+    return clamp((planned / actionPoints) * 100, 0, 100);
+  }
+
+  function renderAllocationSlider(metric, planned) {
+    if (!metric.control || state.running) return "";
+
+    const percent = allocationSliderPercent(metric.key, planned).toFixed(1);
+
+    return `
+      <div class="allocation-slider" style="--allocation-fill:${percent}%;" aria-hidden="true">
+        <span></span>
+      </div>
+    `;
+  }
+
   function renderStation(metric) {
     const value = state.values[metric.key];
     const percent = normalizedValue(metric.key, value);
@@ -427,7 +502,7 @@
       ? `
         <div class="station-controls">
           <button data-action="adjust" data-key="${metric.key}" data-delta="1" aria-label="${metric.label} erhöhen">+</button>
-          <button data-action="adjust" data-key="${metric.key}" data-delta="-1" aria-label="${metric.label} senken">−</button>
+          <button data-action="adjust" data-key="${metric.key}" data-delta="-1" aria-label="${metric.label} senken">&minus;</button>
         </div>
       `
       : "";
@@ -439,10 +514,11 @@
           <span class="meter-value">${Math.round(value)}</span>
         </div>
         <button class="station-art station-art-button ${isPlotVisible ? "is-plot-visible" : ""}" data-action="toggle-plot" data-key="${metric.key}" aria-label="${artLabel}">
-          ${isPlotVisible ? renderStationPlot(metric) : `<img src="${metric.image}" alt="">`}
+          ${isPlotVisible ? renderStationPlot(metric) : renderMetricIcon(metric)}
         </button>
         <h3>${metric.label}</h3>
         ${planned ? `<div class="planned">${signed(planned)}</div>` : ""}
+        ${renderAllocationSlider(metric, planned)}
         ${controls}
       </article>
     `;
@@ -505,12 +581,12 @@
 
     return `
       <g class="effect-node node-${metric.key}">
-        <rect class="effect-meter-shell" x="${meterX}" y="${meterY}" width="${meterW}" height="${meterH}"></rect>
+        <rect class="effect-meter-shell" x="${meterX}" y="${meterY}" width="${meterW}" height="${meterH}" rx="16" ry="16"></rect>
         ${tickLines}
         <rect class="effect-meter-fill fill-${metric.color} ${fillClass}" x="${meterX + 5}" y="${fillY}" width="${meterW - 10}" height="${fillHeight}">
           ${fillAnimation}
         </rect>
-        <rect class="effect-label-box" x="${labelX}" y="${labelY}" width="${labelW}" height="${labelH}"></rect>
+        <rect class="effect-label-box" x="${labelX}" y="${labelY}" width="${labelW}" height="${labelH}" rx="12" ry="12"></rect>
         <text class="effect-label-text" x="${labelX + 14}" y="${labelY + 33}">${escapeHtml(metric.label)}</text>
         <text class="effect-value-text" x="${valueX}" y="${valueY}">${Math.round(value)}</text>
       </g>
