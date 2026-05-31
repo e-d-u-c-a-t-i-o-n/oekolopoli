@@ -557,7 +557,10 @@
     app.innerHTML = `
       <section class="result-screen">
         <div class="result-panel">
-          <p class="kicker">Abrechnung nach ${state.history.length} Jahren</p>
+          <div class="result-panel-top">
+            <p class="kicker">Abrechnung nach ${state.history.length} Jahren</p>
+            <button class="result-restart-top" data-action="restart">Neue Amtszeit</button>
+          </div>
           <h1>${evaluation.title}</h1>
           <p>${evaluation.text}</p>
           <dl class="result-grid">
@@ -568,6 +571,16 @@
               </div>
             `).join("")}
           </dl>
+          <div class="result-plots" aria-label="Verlaufsplots">
+            ${metrics.map((metric) => `
+              <article class="result-plot-card">
+                <h2>${metric.label}</h2>
+                <div class="result-plot-frame">
+                  ${renderStationPlot(metric)}
+                </div>
+              </article>
+            `).join("")}
+          </div>
           <button data-action="restart">Neue Amtszeit</button>
         </div>
       </section>

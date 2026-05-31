@@ -1249,7 +1249,7 @@ button:disabled {
   place-items: center;
   padding: clamp(18px, 5vw, 62px);
   background:
-    linear-gradient(rgba(255, 250, 160, 0.9), rgba(255, 246, 117, 0.92)),
+    linear-gradient(rgba(255, 250, 160, 0.46), rgba(255, 246, 117, 0.5)),
     url("assets/images/intro-heruntergekommenes-land.png");
   background-size: cover;
   background-position: center;
@@ -1259,8 +1259,28 @@ button:disabled {
   width: min(980px, 100%);
   padding: clamp(20px, 4vw, 42px);
   border: 4px solid var(--line);
-  background: rgba(255, 253, 210, 0.96);
+  background: rgba(255, 253, 210, 0.6);
   box-shadow: 10px 10px 0 var(--line);
+}
+
+.result-panel-top {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0 0 8px;
+}
+
+.result-panel-top .kicker {
+  color: var(--blue);
+  font-weight: 700;
+}
+
+.result-restart-top {
+  flex: 0 0 auto;
+  padding: 7px 10px;
+  font-size: 0.86rem;
+  line-height: 1.05;
 }
 
 .result-panel h1 {
@@ -1299,6 +1319,38 @@ button:disabled {
   color: var(--blue);
   font-size: 1.7rem;
   font-weight: 700;
+}
+
+.result-plots {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0 0 24px;
+}
+
+.result-plot-card {
+  min-width: 0;
+}
+
+.result-plot-card h2 {
+  margin: 0;
+  padding: 5px 8px;
+  border: 3px solid var(--line);
+  border-bottom: 0;
+  background: linear-gradient(90deg, rgba(255, 253, 224, 0.94), rgba(255, 235, 104, 0.9));
+  font-size: clamp(0.82rem, 1.7vw, 1rem);
+  line-height: 1.1;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.result-plot-frame {
+  position: relative;
+  aspect-ratio: 280 / 144;
+  border: 3px solid var(--line);
+  background: #fffdf2;
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.22);
+  overflow: hidden;
 }
 
 @media (max-width: 980px) {
@@ -1414,5 +1466,18 @@ button:disabled {
 
   .result-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .result-plots {
+    grid-template-columns: 1fr;
+  }
+
+  .result-panel-top {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .result-restart-top {
+    width: min(100%, 190px);
   }
 }
