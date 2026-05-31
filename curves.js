@@ -51,7 +51,7 @@
       [34, 6],
       [38, 7],
       [42, 8],
-      [47, 9]
+      [46, 9]
     ], population);
 
     if (supplyFactor >= 0.75) {
@@ -68,7 +68,7 @@
       [34, -6],
       [38, -7],
       [42, -8],
-      [47, -9]
+      [46, -9]
     ], population));
     const multiplier = supplyFactor >= 0.6 ? 1 : supplyFactor >= 0.45 ? 2 : supplyFactor >= 0.3 ? 3 : 4;
 
@@ -80,30 +80,30 @@
     const populationFactor = population >= 28 ? 3 : population >= 18 ? 2 : 1;
     return makeCurve([
       [0, -4],
-      [5, -2],
-      [9, -1],
-      [14, 0],
-      [16, 1],
-      [20, 2],
-      [25, 3],
+      [4, -3],
+      [8, -2],
+      [12, -1],
+      [16, 0],
+      [17, 1],
+      [21, 2],
+      [26, 3],
       [32, 3]
     ], "step")(reproduction, { scale: populationFactor });
   }
 
   const curves = {
     "f1-Sanierung-auf-Umweltbelastung": makeCurve([
-      [0, 0], [10, -1], [16, -2], [19, -3], [24, -4], [27, -5],
-      [29, -6], [30, -7], [31, -8], [32, -9]
+      [0, 2], [4, 0], [8, -1], [14, -2], [21, -3], [24, -4],
+      [27, -5], [28, -6], [30, -7], [31, -8], [32, -9]
     ], "step"),
 
     "f2-Sanierung-auf-Sanierung": makeCurve([
-      [0, 0], [21, -1], [23, -2], [25, -3], [27, -2], [29, 0],
+      [0, 0], [22, -1], [24, -2], [26, -3], [28, -1], [30, 0],
       [32, 0]
     ], "step"),
 
     "f3-Produktion-auf-Produktion": makeCurve([
-      [0, 0], [7, 1], [21, 1], [22, 2], [25, 3], [29, 2],
-      [32, 2]
+      [0, 0], [7, 1], [22, 2], [28, 1], [32, 1]
     ], "step"),
 
     "f4-Produktion-auf-Umweltbelastung": makeCurve([
@@ -114,8 +114,7 @@
     ], "linear"),
 
     "f5-Umweltbelastung-auf-Umweltbelastung": makeCurve([
-      [0, 0], [4, -1], [14, -1], [15, -2], [20, -2], [21, -3],
-      [24, -3], [25, -4], [27, -3], [28, -2], [29, 0], [32, 0]
+      [0, 0], [5, -1], [15, -2], [21, -3], [25, 0], [32, 0]
     ], "step"),
 
     "f6-Umweltbelastung-auf-Lebensqualitaet": makeCurve([
@@ -168,7 +167,7 @@
     "fA-Einfluss-der-Bevoelkerung": populationToActionPoints,
 
     "fB-Einfluss-der-Politik": makeCurve([
-      [-10, -5], [-8, -2], [-5, -1], [0, 0], [7, 1],
+      [-10, -8], [-8, -5], [-6, -1], [0, 0], [7, 1],
       [21, 2], [30, 3], [40, 3]
     ], "step"),
 

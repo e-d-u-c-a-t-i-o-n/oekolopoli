@@ -11,10 +11,10 @@
     { key: "sanierung", label: "Sanierung", max: 32, color: "red", x: 28, y: 7, w: 20, h: 27, art: "fields", image: "assets/images/metric-sanierung.png", control: true },
     { key: "produktion", label: "Produktion", max: 32, color: "green", x: 53, y: 7, w: 20, h: 27, art: "factory", image: "assets/images/metric-produktion.png", control: true },
     { key: "umweltbelastung", label: "Umweltbelastung", max: 32, color: "orange", x: 78, y: 7, w: 20, h: 27, art: "dump", image: "assets/images/metric-umweltbelastung.png" },
-    { key: "bevoelkerung", label: "Bevölkerung", max: 48, color: "green", x: 3, y: 66, w: 20, h: 27, art: "city", image: "assets/images/metric-bevoelkerung.png" },
-    { key: "vermehrungsrate", label: "Vermehrungsrate", max: 32, color: "orange", x: 28, y: 66, w: 20, h: 27, art: "home", image: "assets/images/metric-vermehrungsrate.png" },
-    { key: "lebensqualitaet", label: "Lebensqualität", max: 32, color: "red", x: 53, y: 66, w: 20, h: 27, art: "park", image: "assets/images/metric-lebensqualitaet.png", control: true },
-    { key: "aufklaerung", label: "Aufklärung", max: 32, color: "orange", x: 78, y: 66, w: 20, h: 27, art: "school", image: "assets/images/metric-aufklaerung.png", control: true }
+    { key: "bevoelkerung", label: "Bevölkerung", max: 48, color: "green", x: 3, y: 66, w: 22, h: 27, art: "city", image: "assets/images/metric-bevoelkerung.png" },
+    { key: "vermehrungsrate", label: "Vermehrungsrate", max: 32, color: "orange", x: 27, y: 66, w: 21, h: 27, art: "home", image: "assets/images/metric-vermehrungsrate.png" },
+    { key: "lebensqualitaet", label: "Lebensqualität", max: 32, color: "red", x: 51, y: 66, w: 22, h: 27, art: "park", image: "assets/images/metric-lebensqualitaet.png", control: true },
+    { key: "aufklaerung", label: "Aufklärung", max: 32, color: "orange", x: 76, y: 66, w: 22, h: 27, art: "school", image: "assets/images/metric-aufklaerung.png", control: true }
   ];
 
   const metricByKey = metrics.reduce((map, metric) => {
@@ -78,7 +78,7 @@
     produktion: { meter: [700, 198, 32, 180], label: [744, 255, 202, 50], value: [744, 382] },
     umweltbelastung: { meter: [1064, 145, 32, 190], label: [1118, 204, 258, 50], value: [1118, 338] },
     bevoelkerung: { meter: [-2, 440, 32, 250], label: [42, 568, 232, 50], value: [42, 694] },
-    vermehrungsrate: { meter: [350, 525, 32, 175], label: [392, 588, 205, 50], value: [392, 704] },
+    vermehrungsrate: { meter: [350, 525, 32, 175], label: [392, 588, 248, 50], value: [392, 704] },
     lebensqualitaet: { meter: [650, 490, 32, 205], label: [703, 545, 265, 50], value: [703, 700] },
     aufklaerung: { meter: [1030, 500, 32, 205], label: [1082, 558, 212, 50], value: [1082, 704] }
   };
@@ -273,7 +273,6 @@
         <div class="playfield ${state.view === "control" ? "is-control" : "is-effects"}">
           ${state.view === "control" ? renderControlBoard() : renderEffectsBoard()}
         </div>
-        ${renderBottomBar()}
       </section>
     `;
   }
@@ -282,21 +281,32 @@
     const viewLabel = state.view === "control" ? "Wirkung" : "Stellwerk";
     const viewIcon = state.view === "control" ? "⇄" : "▦";
     const disabled = state.running ? "disabled" : "";
+    const left = remainingActionPoints();
+    const startDisabled = state.running || left !== 0 ? "disabled" : "";
 
     return `
       <header class="topline">
-        <div>
+        <div class="top-title">
           <p class="system-name">Ökolopoly</p>
           <h2>${escapeHtml(state.leaderName)}, Jahr ${state.round} von ${MAX_ROUNDS}</h2>
+          <p class="top-hint">${escapeHtml(state.message)}</p>
         </div>
         <div class="top-actions">
+          <button class="icon-button quiet" data-action="restart" title="Reset" aria-label="Reset">
+            <span>↺</span>
+            <small>Reset</small>
+          </button>
+          <div class="top-ap-compact" aria-label="Verbleibende Aktionspunkte">
+            <span>Aktionspunkte</span>
+            <output>${left}</output>
+          </div>
           <button class="icon-button" data-action="toggle-view" ${disabled} title="Ansicht wechseln" aria-label="Ansicht wechseln">
             <span>${viewIcon}</span>
             <small>${viewLabel}</small>
           </button>
-          <button class="icon-button quiet" data-action="restart" title="Neu starten" aria-label="Neu starten">
-            <span>↺</span>
-            <small>Neu</small>
+          <button class="icon-button play-button" data-action="start-simulation" ${startDisabled} title="Runde starten" aria-label="Runde starten">
+            <span>▶</span>
+            <small>Start</small>
           </button>
         </div>
       </header>
