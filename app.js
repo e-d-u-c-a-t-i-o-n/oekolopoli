@@ -104,9 +104,9 @@
     screen: "intro",
     view: "control",
     leaderName: "",
-    scenarioKey: "schwellenland",
+    scenarioKey: "industrieland",
     round: 1,
-    actionPoints: scenarios.schwellenland.actionPoints,
+    actionPoints: scenarios.industrieland.actionPoints,
     running: false,
     paused: false,
     resultReason: "",
@@ -116,8 +116,8 @@
     showPlots: false,
     allocations: blankAllocations(),
     history: [],
-    initialValues: initialValues("schwellenland"),
-    values: initialValues("schwellenland")
+    initialValues: initialValues("industrieland"),
+    values: initialValues("industrieland")
   };
 
   let timer = null;
