@@ -467,28 +467,6 @@
     `;
   }
 
-  function allocationSliderPercent(key, planned) {
-    const actionPoints = Math.max(1, state.actionPoints);
-
-    if (key === "produktion") {
-      return clamp(((planned + actionPoints) / (actionPoints * 2)) * 100, 0, 100);
-    }
-
-    return clamp((planned / actionPoints) * 100, 0, 100);
-  }
-
-  function renderAllocationSlider(metric, planned) {
-    if (!metric.control || state.running) return "";
-
-    const percent = allocationSliderPercent(metric.key, planned).toFixed(1);
-
-    return `
-      <div class="allocation-slider" style="--allocation-fill:${percent}%;" aria-hidden="true">
-        <span></span>
-      </div>
-    `;
-  }
-
   function renderStation(metric) {
     const value = state.values[metric.key];
     const percent = normalizedValue(metric.key, value);
@@ -518,7 +496,6 @@
         </button>
         <h3>${metric.label}</h3>
         ${planned ? `<div class="planned">${signed(planned)}</div>` : ""}
-        ${renderAllocationSlider(metric, planned)}
         ${controls}
       </article>
     `;
