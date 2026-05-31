@@ -113,8 +113,10 @@
     message: "Verteile alle Aktionspunkte und starte dann die Runde.",
     activeStep: null,
     simulation: null,
+    showPlots: false,
     allocations: blankAllocations(),
     history: [],
+    initialValues: initialValues("schwellenland"),
     values: initialValues("schwellenland")
   };
 
@@ -180,6 +182,91 @@
   function normalizedValue(key, value) {
     const metric = metricByKey[key];
     return clamp((value / metric.max) * 100, 0, 100);
+  }
+
+  function valuesAfterAllocations(values, allocations) {
+    const nextValues = Object.assign({}, values);
+
+    controlKeys.forEach((key) => {
+      const delta = allocations[key] || 0;
+      nextValues[key] = clamp(nextValues[key] + delta, 0, metricByKey[key].max);
+    });
+
+    return nextValues;
+  }
+
+  function metricHistoryPoints(metric) {
+    const points = [{ step: 0, value: state.initialValues[metric.key] }];
+    let previousValues = Object.assign({}, state.initialValues);
+
+    state.history.forEach((entry) => {
+      const allocationValues = entry.allocationValues
+        ? entry.allocationValues
+        : valuesAfterAllocations(previousValues, entry.allocations || blankAllocations());
+
+      points.push({ step: entry.round * 2 - 1, value: allocationValues[metric.key] });
+      points.push({ step: entry.round * 2, value: entry.values[metric.key] });
+      previousValues = Object.assign({}, entry.values);
+    });
+
+    if (!state.running && state.screen === "game" && state.round <= MAX_ROUNDS) {
+      const currentStep = state.round * 2 - 1;
+      const hasCurrentPoint = points.some((point) => point.step === currentStep);
+      const allocationValues = valuesAfterAllocations(state.values, state.allocations);
+
+      if (!hasCurrentPoint && usedActionPoints(state.allocations) > 0) {
+        points.push({ step: currentStep, value: allocationValues[metric.key] });
+      }
+    }
+
+    return points;
+  }
+
+  function renderStationPlot(metric) {
+    const points = metricHistoryPoints(metric);
+    const plot = {
+      left: 28,
+      right: 268,
+      top: 12,
+      bottom: 115
+    };
+    const minValue = metric.key === "politik" ? -10 : 0;
+    const maxValue = metric.max;
+    const xForStep = (step) => plot.left + ((plot.right - plot.left) * step / (MAX_ROUNDS * 2));
+    const yForValue = (value) => {
+      const ratio = (clamp(value, minValue, maxValue) - minValue) / (maxValue - minValue || 1);
+      return plot.bottom - ((plot.bottom - plot.top) * ratio);
+    };
+    const path = points.map((point, index) => {
+      const command = index === 0 ? "M" : "L";
+      return `${command}${xForStep(point.step).toFixed(1)} ${yForValue(point.value).toFixed(1)}`;
+    }).join(" ");
+    const currentValue = points.length ? Math.round(points[points.length - 1].value) : Math.round(state.values[metric.key]);
+
+    return `
+      <svg class="station-plot" viewBox="0 0 280 144" role="img" aria-label="Verlauf ${metric.label}">
+        <rect class="plot-panel" x="1" y="1" width="278" height="142"></rect>
+        ${Array.from({ length: MAX_ROUNDS * 2 + 1 }, (_, step) => {
+          const x = xForStep(step);
+          const yearLine = step % 2 === 0;
+          return `<line class="plot-step ${yearLine ? "is-year" : "is-half"}" x1="${x}" y1="${plot.top}" x2="${x}" y2="${plot.bottom}"></line>`;
+        }).join("")}
+        ${[0, 0.25, 0.5, 0.75, 1].map((ratio) => {
+          const y = plot.bottom - ((plot.bottom - plot.top) * ratio);
+          return `<line class="plot-value-line" x1="${plot.left}" y1="${y}" x2="${plot.right}" y2="${y}"></line>`;
+        }).join("")}
+        <line class="plot-axis" x1="${plot.left}" y1="${plot.bottom}" x2="${plot.right}" y2="${plot.bottom}"></line>
+        <line class="plot-axis" x1="${plot.left}" y1="${plot.top}" x2="${plot.left}" y2="${plot.bottom}"></line>
+        ${path ? `<path class="plot-line plot-${metric.color}" d="${path}"></path>` : ""}
+        ${points.map((point) => `<circle class="plot-point plot-${metric.color}" cx="${xForStep(point.step)}" cy="${yForValue(point.value)}" r="3.1"></circle>`).join("")}
+        ${Array.from({ length: MAX_ROUNDS }, (_, index) => {
+          const year = index + 1;
+          const x = xForStep(year * 2 - 1);
+          return `<text class="plot-year" x="${x}" y="135">${year}</text>`;
+        }).join("")}
+        <text class="plot-value-label" x="8" y="18">${currentValue}</text>
+      </svg>
+    `;
   }
 
   function render() {
@@ -332,6 +419,10 @@
     const percent = normalizedValue(metric.key, value);
     const planned = state.allocations[metric.key] || 0;
     const controlClass = metric.control ? "is-adjustable" : "";
+    const isPlotVisible = state.showPlots;
+    const artLabel = isPlotVisible
+      ? `${metric.label}: Bild anzeigen`
+      : `${metric.label}: Verlauf anzeigen`;
     const controls = metric.control && !state.running
       ? `
         <div class="station-controls">
@@ -347,9 +438,9 @@
           <div class="meter-fill" style="height:${percent}%"></div>
           <span class="meter-value">${Math.round(value)}</span>
         </div>
-        <div class="station-art" aria-hidden="true">
-          <img src="${metric.image}" alt="">
-        </div>
+        <button class="station-art station-art-button ${isPlotVisible ? "is-plot-visible" : ""}" data-action="toggle-plot" data-key="${metric.key}" aria-label="${artLabel}">
+          ${isPlotVisible ? renderStationPlot(metric) : `<img src="${metric.image}" alt="">`}
+        </button>
         <h3>${metric.label}</h3>
         ${planned ? `<div class="planned">${signed(planned)}</div>` : ""}
         ${controls}
@@ -559,6 +650,7 @@
   }
 
   function buildSimulation() {
+    const startValues = Object.assign({}, state.values);
     const draft = Object.assign({}, state.values);
     const steps = [];
 
@@ -575,6 +667,8 @@
         text: `${metricLabel(key)} wird direkt gestellt`
       });
     });
+
+    const allocationValues = Object.assign({}, draft);
 
     relations.forEach(([from, to, curveKey]) => {
       const context = { values: draft };
@@ -598,6 +692,8 @@
     return {
       index: 0,
       steps,
+      startValues,
+      allocationValues,
       finalValues: draft,
       nextActionPoints: actionPointPreview.total,
       actionPointDetails: actionPointPreview
@@ -638,6 +734,8 @@
     state.actionPoints = sim.nextActionPoints;
     state.history.push({
       round: state.round,
+      beforeValues: Object.assign({}, sim.startValues),
+      allocationValues: Object.assign({}, sim.allocationValues),
       allocations: Object.assign({}, state.allocations),
       values: Object.assign({}, state.values),
       actionPointDetails: sim.actionPointDetails
@@ -742,8 +840,10 @@
     state.message = "Verteile alle Aktionspunkte und starte dann die Runde.";
     state.activeStep = null;
     state.simulation = null;
+    state.showPlots = false;
     state.allocations = blankAllocations();
     state.history = [];
+    state.initialValues = initialValues(state.scenarioKey);
     state.values = initialValues(state.scenarioKey);
     render();
   }
@@ -758,8 +858,10 @@
     state.leaderName = String(data.get("leaderName") || "").trim() || "Regierungschef";
     state.scenarioKey = scenarios[scenarioKey] ? scenarioKey : "schwellenland";
     state.actionPoints = initialActionPoints(state.scenarioKey);
-    state.values = initialValues(state.scenarioKey);
+    state.initialValues = initialValues(state.scenarioKey);
+    state.values = Object.assign({}, state.initialValues);
     state.allocations = blankAllocations();
+    state.showPlots = false;
     state.screen = "game";
     state.view = "control";
     state.message = `Du hast am Anfang ${state.actionPoints} Aktionspunkte. Verteile sie im Stellwerk.`;
@@ -784,6 +886,9 @@
       fastForwardSimulation();
     } else if (action === "restart") {
       restart();
+    } else if (action === "toggle-plot") {
+      state.showPlots = !state.showPlots;
+      render();
     }
   });
 
