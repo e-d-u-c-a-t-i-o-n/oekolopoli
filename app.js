@@ -30,7 +30,7 @@
       description: "Hohe Produktion, bessere Aufklärung, spürbare Umweltbelastung.",
       actionPoints: 8,
       values: {
-        politik: 0,
+        politik: 2,
         sanierung: 1,
         produktion: 9,
         umweltbelastung: 13,
@@ -45,7 +45,7 @@
       description: "Die Ausgangslage ist angespannt, aber noch gestaltbar.",
       actionPoints: 8,
       values: {
-        politik: 0,
+        politik: 2,
         sanierung: 1,
         produktion: 9,
         umweltbelastung: 17,
@@ -60,7 +60,7 @@
       description: "Wenig Produktion, niedrige Lebensqualität, hohes Bevölkerungswachstum.",
       actionPoints: 10,
       values: {
-        politik: -1,
+        politik: 2,
         sanierung: 2,
         produktion: 3,
         umweltbelastung: 14,
