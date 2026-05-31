@@ -607,8 +607,9 @@
 
   function renderResult() {
     const evaluation = evaluateGame();
+    const resultOutcome = state.resultReason === "dismissed" ? "fail" : "success";
     app.innerHTML = `
-      <section class="result-screen">
+      <section class="result-screen" data-scenario="${state.scenarioKey}" data-outcome="${resultOutcome}">
         <div class="result-panel">
           <div class="result-panel-top">
             <p class="kicker">Abrechnung nach ${state.history.length} Jahren</p>

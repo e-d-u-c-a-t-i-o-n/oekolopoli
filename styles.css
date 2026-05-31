@@ -1020,23 +1020,58 @@ button:disabled {
   display: grid;
   place-items: center;
   overflow: hidden;
+  isolation: isolate;
   padding: clamp(18px, 5vw, 62px);
+  --result-bg: url("assets/images/success-industrieland.png");
   background:
     linear-gradient(130deg, rgba(8, 185, 216, 0.14), transparent 40%),
     linear-gradient(180deg, #fbfeff 0%, #eaf9fb 52%, #d7eff4 100%);
 }
 
+.result-screen[data-outcome="success"][data-scenario="industrieland"] {
+  --result-bg: url("assets/images/success-industrieland.png");
+}
+
+.result-screen[data-outcome="success"][data-scenario="schwellenland"] {
+  --result-bg: url("assets/images/success-schwellenland.png");
+}
+
+.result-screen[data-outcome="success"][data-scenario="entwicklungsland"] {
+  --result-bg: url("assets/images/success-entwicklungsland.png");
+}
+
+.result-screen[data-outcome="fail"][data-scenario="industrieland"] {
+  --result-bg: url("assets/images/start-schwellenland.png");
+}
+
+.result-screen[data-outcome="fail"][data-scenario="schwellenland"],
+.result-screen[data-outcome="fail"][data-scenario="entwicklungsland"] {
+  --result-bg: url("assets/images/start-entwicklungsland.png");
+}
+
+.result-screen::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: var(--result-bg) center / cover no-repeat;
+  opacity: 0.95;
+  filter: saturate(0.92) contrast(1.12);
+}
+
 .result-screen::after {
   content: "";
   position: absolute;
-  left: -6vw;
-  right: -6vw;
-  bottom: -22px;
-  height: 210px;
-  opacity: 0.3;
-  background:
-    linear-gradient(135deg, transparent 0 28%, rgba(8, 185, 216, 0.48) 28% 31%, transparent 31%),
-    linear-gradient(90deg, transparent 0 8%, rgba(8, 185, 216, 0.48) 8% 11%, transparent 11% 18%, rgba(8, 185, 216, 0.48) 18% 22%, transparent 22% 32%, rgba(8, 185, 216, 0.48) 32% 36%, transparent 36% 48%, rgba(8, 185, 216, 0.48) 48% 52%, transparent 52% 63%, rgba(8, 185, 216, 0.48) 63% 67%, transparent 67% 79%, rgba(8, 185, 216, 0.48) 79% 83%, transparent 83%);
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(90deg, rgba(251, 254, 255, 0.82) 0%, rgba(251, 254, 255, 0.66) 45%, rgba(251, 254, 255, 0.48) 100%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(217, 242, 246, 0.68)),
+    linear-gradient(rgba(6, 34, 52, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(6, 34, 52, 0.04) 1px, transparent 1px);
+  background-size: auto, auto, 50px 50px, 50px 50px;
 }
 
 .result-panel {
