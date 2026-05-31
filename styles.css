@@ -731,8 +731,8 @@ button:disabled {
 .station-controls {
   position: absolute;
   left: -2px;
-  top: 0;
-  bottom: 36px;
+  top: -32px;
+  bottom: 0px;
   width: 34px;
   display: flex;
   flex-direction: column;
