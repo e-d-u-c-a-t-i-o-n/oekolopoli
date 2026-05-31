@@ -7,14 +7,14 @@
   const MAX_ROUNDS = 12;
 
   const metrics = [
-    { key: "politik", label: "Politik", max: 32, color: "red", x: 3, y: 7, w: 24, h: 32, art: "parliament", image: "assets/images/metric-politik.png" },
-    { key: "sanierung", label: "Sanierung", max: 32, color: "red", x: 31, y: 5, w: 22, h: 34, art: "fields", image: "assets/images/metric-sanierung.png", control: true },
-    { key: "produktion", label: "Produktion", max: 32, color: "green", x: 54, y: 5, w: 25, h: 33, art: "factory", image: "assets/images/metric-produktion.png", control: true },
-    { key: "umweltbelastung", label: "Umweltbelastung", max: 32, color: "orange", x: 81, y: 9, w: 18, h: 30, art: "dump", image: "assets/images/metric-umweltbelastung.png" },
-    { key: "bevoelkerung", label: "Bevölkerung", max: 48, color: "green", x: 3, y: 55, w: 24, h: 31, art: "city", image: "assets/images/metric-bevoelkerung.png" },
-    { key: "vermehrungsrate", label: "Vermehrungsrate", max: 32, color: "orange", x: 27, y: 55, w: 20, h: 31, art: "home", image: "assets/images/metric-vermehrungsrate.png" },
-    { key: "lebensqualitaet", label: "Lebensqualität", max: 32, color: "red", x: 49, y: 53, w: 25, h: 34, art: "park", image: "assets/images/metric-lebensqualitaet.png", control: true },
-    { key: "aufklaerung", label: "Aufklärung", max: 32, color: "orange", x: 76, y: 54, w: 22, h: 32, art: "school", image: "assets/images/metric-aufklaerung.png", control: true }
+    { key: "politik", label: "Politik", max: 32, color: "red", x: 3, y: 7, w: 20, h: 27, art: "parliament", image: "assets/images/metric-politik.png" },
+    { key: "sanierung", label: "Sanierung", max: 32, color: "red", x: 28, y: 7, w: 20, h: 27, art: "fields", image: "assets/images/metric-sanierung.png", control: true },
+    { key: "produktion", label: "Produktion", max: 32, color: "green", x: 53, y: 7, w: 20, h: 27, art: "factory", image: "assets/images/metric-produktion.png", control: true },
+    { key: "umweltbelastung", label: "Umweltbelastung", max: 32, color: "orange", x: 78, y: 7, w: 20, h: 27, art: "dump", image: "assets/images/metric-umweltbelastung.png" },
+    { key: "bevoelkerung", label: "Bevölkerung", max: 48, color: "green", x: 3, y: 66, w: 20, h: 27, art: "city", image: "assets/images/metric-bevoelkerung.png" },
+    { key: "vermehrungsrate", label: "Vermehrungsrate", max: 32, color: "orange", x: 28, y: 66, w: 20, h: 27, art: "home", image: "assets/images/metric-vermehrungsrate.png" },
+    { key: "lebensqualitaet", label: "Lebensqualität", max: 32, color: "red", x: 53, y: 66, w: 20, h: 27, art: "park", image: "assets/images/metric-lebensqualitaet.png", control: true },
+    { key: "aufklaerung", label: "Aufklärung", max: 32, color: "orange", x: 78, y: 66, w: 20, h: 27, art: "school", image: "assets/images/metric-aufklaerung.png", control: true }
   ];
 
   const metricByKey = metrics.reduce((map, metric) => {
@@ -85,13 +85,13 @@
 
   const arrowPaths = {
     "sanierung->umweltbelastung": "M500 220 L500 90 L1082 90 L1082 138",
-    "sanierung->sanierung": "M498 330 L466 330 C448 360 420 376 382 376",
+    "sanierung->sanierung": "M504 304 C520 338 494 366 456 366 C430 366 410 354 392 336",
     "produktion->produktion": "M812 306 L812 342 L724 342",
     "produktion->umweltbelastung": "M945 280 L1050 280",
     "umweltbelastung->umweltbelastung": "M1212 252 L1212 292 C1185 318 1135 320 1098 296",
     "umweltbelastung->lebensqualitaet": "M1210 295 L1210 445 L684 445 L684 502",
     "aufklaerung->lebensqualitaet": "M1080 595 L970 595",
-    "aufklaerung->vermehrungsrate": "M1210 610 L1210 762 L382 762",
+    "aufklaerung->vermehrungsrate": "M1210 610 L1210 760 L420 760 C392 760 370 742 370 704",
     "aufklaerung->aufklaerung": "M1168 610 L1168 650 C1138 678 1100 690 1062 674",
     "lebensqualitaet->politik": "M684 705 L684 430 L32 430 L32 280",
     "lebensqualitaet->lebensqualitaet": "M764 618 C740 660 720 668 684 642",

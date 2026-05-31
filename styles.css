@@ -267,10 +267,9 @@ button:disabled {
   grid-template-rows: auto minmax(0, 1fr) auto;
   background:
     radial-gradient(circle at 18% 20%, rgba(255, 246, 106, 0.28), transparent 30%),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.74), rgba(0, 0, 0, 0.24) 45%, rgba(0, 0, 0, 0.44)),
-    linear-gradient(0deg, rgba(0, 0, 0, 0.66), rgba(255, 246, 106, 0.08) 56%),
-    url("assets/images/intro-heruntergekommenes-land.png");
-  background-size: auto, auto, auto, cover;
+    linear-gradient(90deg, rgba(35, 33, 18, 0.7), rgba(96, 83, 31, 0.18) 45%, rgba(35, 33, 18, 0.45)),
+    linear-gradient(180deg, #f4e98e 0%, #d0b84e 52%, #1f2119 100%);
+  background-size: auto;
   background-position: center;
   background-attachment: fixed;
   color: var(--ink);
@@ -500,8 +499,7 @@ button:disabled {
   inset: 0;
   background:
     linear-gradient(180deg, rgba(255, 246, 120, 0.05), rgba(0, 0, 0, 0.22)),
-    radial-gradient(circle at 50% 40%, transparent 0 52%, rgba(0, 0, 0, 0.28) 100%),
-    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.12) 0 1px, transparent 1px 5px);
+    radial-gradient(circle at 50% 40%, transparent 0 52%, rgba(0, 0, 0, 0.28) 100%);
   mix-blend-mode: multiply;
   z-index: 1;
 }
