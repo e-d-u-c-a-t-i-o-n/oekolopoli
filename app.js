@@ -506,6 +506,15 @@
     return scenario ? scenario.description : scenarios[key].description;
   }
 
+  function metricMinValue(key) {
+    return key === "politik" ? -10 : 0;
+  }
+
+  function clampMetricValue(key, value) {
+    const metric = metricByKey[key];
+    return clamp(value, metricMinValue(key), metric.max);
+  }
+
   function normalizedValue(key, value) {
     const metric = metricByKey[key];
     return clamp((value / metric.max) * 100, 0, 100);
@@ -516,7 +525,7 @@
 
     controlKeys.forEach((key) => {
       const delta = allocations[key] || 0;
-      nextValues[key] = clamp(nextValues[key] + delta, 0, metricByKey[key].max);
+      nextValues[key] = clampMetricValue(key, nextValues[key] + delta);
     });
 
     return nextValues;
@@ -558,7 +567,7 @@
       top: 12,
       bottom: 115
     };
-    const minValue = metric.key === "politik" ? -10 : 0;
+    const minValue = 0;
     const maxValue = metric.max;
     const xForStep = (step) => plot.left + ((plot.right - plot.left) * step / (MAX_ROUNDS * 2));
     const yForValue = (value) => {
@@ -1082,7 +1091,7 @@
     controlKeys.forEach((key) => {
       const delta = state.allocations[key];
       if (!delta) return;
-      draft[key] = clamp(draft[key] + delta, 0, metricByKey[key].max);
+      draft[key] = clampMetricValue(key, draft[key] + delta);
       steps.push({
         type: "allocation",
         from: null,
@@ -1100,7 +1109,7 @@
       const delta = curves[curveKey](draft[from], context);
       if (!delta) return;
 
-      draft[to] = clamp(draft[to] + delta, 0, metricByKey[to].max);
+      draft[to] = clampMetricValue(to, draft[to] + delta);
       steps.push({
         type: "curve",
         from,
@@ -1138,9 +1147,8 @@
         return;
       }
 
-      const metric = metricByKey[step.to];
       const fromValue = state.values[step.to];
-      const toValue = clamp(fromValue + step.delta, 0, metric.max);
+      const toValue = clampMetricValue(step.to, fromValue + step.delta);
       step.fromValue = fromValue;
       step.toValue = toValue;
       state.values[step.to] = toValue;
@@ -1172,7 +1180,7 @@
     state.simulation = null;
     state.allocations = blankAllocations();
 
-    if (state.values.politik <= 0) {
+    if (state.values.politik < 0) {
       state.resultReason = "dismissed";
       state.screen = "result";
       render();

@@ -147,8 +147,7 @@
 
     "f11-Lebensqualitaet-auf-Vermehrungsrate": makeCurve([
       [0, -15], [1, -8], [3, -5], [6, 0], [10, 3],
-      [12, 3], [13, 2], [18, 4], [20, 5], [24, 8],
-      [28, 10], [32, 12]
+      [12, 3], [13, 2], [21, 2], [22, 1], [32, 1]
     ], "linear"),
 
     "f12-Lebensqualitaet-auf-Politik": makeCurve([
