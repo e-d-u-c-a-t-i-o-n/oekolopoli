@@ -1099,7 +1099,6 @@ button:disabled {
   min-height: 100vh;
   display: grid;
   place-items: center;
-  overflow: hidden;
   isolation: isolate;
   padding: clamp(18px, 5vw, 62px);
   --result-bg: url("assets/images/success-industrieland.png");
@@ -1129,17 +1128,6 @@ button:disabled {
   --result-bg: url("assets/images/start-entwicklungsland.png");
 }
 
-.result-screen::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background: var(--result-bg) center / cover no-repeat;
-  opacity: 0.95;
-  filter: saturate(0.92) contrast(1.12);
-}
-
 .result-screen::after {
   content: "";
   position: absolute;
@@ -1157,12 +1145,31 @@ button:disabled {
 .result-panel {
   position: relative;
   z-index: 1;
+  display: grid;
+  gap: 10px;
   width: min(980px, 100%);
-  padding: clamp(20px, 4vw, 34px);
+}
+
+.result-summary-panel,
+.result-diagram-panel {
   border: 1px solid var(--line-strong);
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 22px 56px rgba(6, 34, 52, 0.2);
+  box-shadow: 0 22px 56px rgba(6, 34, 52, 0.18);
+  overflow: hidden;
+}
+
+.result-summary-panel {
+  padding: clamp(20px, 4vw, 34px);
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.88) 0%, rgba(255, 255, 255, 0.72) 50%, rgba(255, 255, 255, 0.38) 100%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(227, 248, 251, 0.2)),
+    var(--result-bg) center / cover no-repeat;
+  backdrop-filter: blur(8px);
+}
+
+.result-diagram-panel {
+  padding: clamp(18px, 3vw, 34px);
+  background: rgba(255, 255, 255, 0.94);
   backdrop-filter: blur(16px);
 }
 
@@ -1196,6 +1203,19 @@ button:disabled {
   font-size: clamp(2.4rem, 7vw, 5rem);
 }
 
+.result-panel[data-result-tone="stable"] h1 {
+  color: var(--cyan-dark);
+}
+
+.result-panel[data-result-tone="shaky"] h1,
+.result-panel[data-result-tone="weak"] h1 {
+  color: var(--ink);
+}
+
+.result-panel[data-result-tone="fail"] h1 {
+  color: var(--red);
+}
+
 .result-panel p {
   margin: 0 0 22px;
   max-width: 780px;
@@ -1215,7 +1235,8 @@ button:disabled {
   padding: 10px;
   border: 1px solid var(--line);
   border-radius: 10px;
-  background: #f3fbfd;
+  background: rgba(243, 251, 253, 0.68);
+  backdrop-filter: blur(6px);
 }
 
 .result-grid dt {
@@ -1266,7 +1287,7 @@ button:disabled {
   background: #fff;
 }
 
-.result-panel > button:last-child {
+.result-diagram-panel > button:last-child {
   width: 100%;
   min-height: 52px;
   border: 0;

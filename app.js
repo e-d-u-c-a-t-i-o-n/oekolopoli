@@ -975,34 +975,39 @@
     const copy = text();
     const evaluation = evaluateGame();
     const resultOutcome = state.resultReason === "dismissed" ? "fail" : "success";
+    const resultTone = evaluation.tone || resultOutcome;
     app.innerHTML = `
-      <section class="result-screen" data-scenario="${state.scenarioKey}" data-outcome="${resultOutcome}">
-        <div class="result-panel">
-          <div class="result-panel-top">
-            <p class="kicker">${copy.result.kicker(state.history.length)}</p>
-            <button class="result-restart-top" data-action="restart">${copy.result.newTerm}</button>
-          </div>
-          <h1>${evaluation.title}</h1>
-          <p>${evaluation.text}</p>
-          <dl class="result-grid">
-            ${metrics.map((metric) => `
-              <div>
-                <dt>${metricLabel(metric.key)}</dt>
-                <dd>${Math.round(state.values[metric.key])}</dd>
-              </div>
-            `).join("")}
-          </dl>
-          <div class="result-plots" aria-label="${copy.result.plotsAria}">
-            ${metrics.map((metric) => `
-              <article class="result-plot-card">
-                <h2>${metricLabel(metric.key)}</h2>
-                <div class="result-plot-frame">
-                  ${renderStationPlot(metric)}
+      <section class="result-screen" data-scenario="${state.scenarioKey}" data-outcome="${resultOutcome}" data-result-tone="${resultTone}">
+        <div class="result-panel" data-result-tone="${resultTone}">
+          <div class="result-summary-panel">
+            <div class="result-panel-top">
+              <p class="kicker">${copy.result.kicker(state.history.length)}</p>
+              <button class="result-restart-top" data-action="restart">${copy.result.newTerm}</button>
+            </div>
+            <h1>${evaluation.title}</h1>
+            <p>${evaluation.text}</p>
+            <dl class="result-grid">
+              ${metrics.map((metric) => `
+                <div>
+                  <dt>${metricLabel(metric.key)}</dt>
+                  <dd>${Math.round(state.values[metric.key])}</dd>
                 </div>
-              </article>
-            `).join("")}
+              `).join("")}
+            </dl>
           </div>
-          <button data-action="restart">${copy.result.newTerm}</button>
+          <div class="result-diagram-panel">
+            <div class="result-plots" aria-label="${copy.result.plotsAria}">
+              ${metrics.map((metric) => `
+                <article class="result-plot-card">
+                  <h2>${metricLabel(metric.key)}</h2>
+                  <div class="result-plot-frame">
+                    ${renderStationPlot(metric)}
+                  </div>
+                </article>
+              `).join("")}
+            </div>
+            <button data-action="restart">${copy.result.newTerm}</button>
+          </div>
         </div>
       </section>
     `;
@@ -1232,7 +1237,7 @@
     const copy = text().evaluation;
 
     if (state.resultReason === "dismissed") {
-      return copy.dismissed;
+      return Object.assign({ tone: "fail" }, copy.dismissed);
     }
 
     const score = values.politik + values.lebensqualitaet + values.sanierung + values.aufklaerung
@@ -1240,14 +1245,14 @@
       + Math.max(0, 28 - values.vermehrungsrate);
 
     if (score >= 105) {
-      return copy.stable;
+      return Object.assign({ tone: "stable" }, copy.stable);
     }
 
     if (score >= 78) {
-      return copy.shaky;
+      return Object.assign({ tone: "shaky" }, copy.shaky);
     }
 
-    return copy.weak;
+    return Object.assign({ tone: "weak" }, copy.weak);
   }
 
   function restart() {
