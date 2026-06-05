@@ -678,6 +678,12 @@
             </div>
           </form>
         </div>
+        <p class="intro-attribution">
+          Diese neue Version knüpft an Frederic Vesters Ökolopoly an.
+          Das kybernetische Umweltspiel erschien 1984 bei Ravensburger.
+          Als Planspiel macht es Rückwirkungen erfahrbar und simuliert die Zusammenhänge zwischen Gesellschaft, Wirtschaft und Umwelt.
+          <a href="impressum.html">Impressum</a>
+        </p>
       </section>
     `;
   }

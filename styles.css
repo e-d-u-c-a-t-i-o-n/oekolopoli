@@ -81,7 +81,8 @@ button:disabled {
   min-height: 100vh;
   overflow: hidden;
   display: grid;
-  align-items: center;
+  grid-template-rows: minmax(0, 1fr) auto;
+  align-items: stretch;
   isolation: isolate;
   padding: clamp(24px, 5vw, 72px);
   --intro-bg: url("assets/images/start-industrieland.png");
@@ -134,6 +135,7 @@ button:disabled {
 .intro-copy {
   position: relative;
   z-index: 1;
+  align-self: center;
   max-width: 760px;
   color: var(--ink);
 }
@@ -379,6 +381,107 @@ button:disabled {
   margin: 0;
   color: var(--ink);
   font-weight: 900;
+}
+
+.intro-attribution {
+  position: relative;
+  z-index: 1;
+  max-width: 760px;
+  margin: clamp(18px, 3vw, 34px) 0 0;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.intro-attribution a {
+  display: block;
+  width: fit-content;
+  margin-top: 2px;
+  color: var(--cyan-dark);
+  font-weight: 900;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.imprint-screen {
+  position: relative;
+  min-height: 100vh;
+  display: grid;
+  align-content: center;
+  overflow: hidden;
+  padding: clamp(28px, 6vw, 86px);
+  background:
+    linear-gradient(130deg, rgba(8, 185, 216, 0.18), transparent 36%),
+    linear-gradient(180deg, #fbfeff 0%, #eaf9fb 52%, #d7eff4 100%);
+}
+
+.imprint-screen::before,
+.imprint-screen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.imprint-screen::before {
+  background: url("assets/images/start-industrieland.png") center / cover no-repeat;
+  opacity: 0.42;
+  filter: saturate(0.86) contrast(1.08);
+}
+
+.imprint-screen::after {
+  background-image:
+    linear-gradient(90deg, rgba(251, 254, 255, 0.94) 0%, rgba(251, 254, 255, 0.72) 48%, rgba(251, 254, 255, 0.48) 100%),
+    linear-gradient(rgba(6, 34, 52, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(6, 34, 52, 0.045) 1px, transparent 1px);
+  background-size: auto, 48px 48px, 48px 48px;
+}
+
+.imprint-content {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+  color: var(--ink);
+}
+
+.imprint-content h1 {
+  margin: 0 0 22px;
+  font-size: clamp(3rem, 9vw, 6.8rem);
+  line-height: 0.92;
+  letter-spacing: 0;
+}
+
+.imprint-content p,
+.imprint-content address {
+  max-width: 620px;
+  margin: 0 0 24px;
+  color: var(--ink-soft);
+  font-size: clamp(1.05rem, 2.2vw, 1.35rem);
+  line-height: 1.55;
+}
+
+.imprint-content address {
+  font-style: normal;
+}
+
+.imprint-content strong {
+  color: var(--ink);
+  font-size: 1.08em;
+}
+
+.imprint-back {
+  display: inline-flex;
+  min-height: 52px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 20px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--blue), var(--cyan));
+  color: #fff;
+  font-weight: 900;
+  text-decoration: none;
+  box-shadow: var(--soft-shadow);
 }
 
 .game-screen {
