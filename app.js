@@ -5,6 +5,9 @@
   const app = document.getElementById("app");
 
   const MAX_ROUNDS = 12;
+  const TOOLTIP_DELAY = 720;
+  const TOOLTIP_MOVE_TOLERANCE = 10;
+  const TOOLTIP_RELEASE_VISIBLE_MS = 2600;
   const DEFAULT_LANGUAGE = "de";
   const languageOptions = {
     de: { code: "DE", label: "Deutsch", htmlLang: "de" },
@@ -287,6 +290,17 @@
     { key: "aufklaerung", label: "Bildung", max: 32, color: "orange", x: 76, y: 47, w: 22, h: 27, art: "school", image: "assets/images/metric-aufklaerung.jpg", control: true }
   ];
 
+  const metricTooltips = {
+    politik: "Wenn Menschen Sicherheit, Arbeit und Hoffnung spüren, trauen sie der Regierung mehr zu. Wird der Alltag zu hart, kippt Vertrauen schnell in Unmut.",
+    sanierung: "Sanierung ist Vorsorge: reparieren, bevor Schäden riesig werden. Gute Kreisläufe und saubere Technik halten Umweltprobleme kleiner.",
+    produktion: "Ein stärkerer Wirtschaftsmotor hilft zuerst: mehr Arbeit, mehr Waren, mehr Geld. Wird er zu heiß gefahren, entstehen Probleme, die anderswo Punkte kosten.",
+    umweltbelastung: "Natur kann eine Weile viel abfedern. Ist der Puffer voll, trifft die Belastung plötzlich Gesundheit, Wohnen und Lebensqualität.",
+    bevoelkerung: "Viele Menschen können ein Land lebendig und stark machen. Wenn Platz, Arbeit und Versorgung nicht mithalten, wird aus Nähe schnell Gedränge.",
+    vermehrungsrate: "Viele Geburten können ein Land wachsen lassen, aber nur wenn Versorgung und Chancen mitwachsen. Bildung und bessere Lebensplanung verändern oft, wie groß Familien werden.",
+    lebensqualitaet: "Wenn Menschen gut leben können, bleiben sie eher und vertrauen der Politik mehr. Fällt die Lebensqualität zu tief, schrumpfen Hoffnung, Rückhalt und Bevölkerung.",
+    aufklaerung: "Wer mehr versteht, plant eher voraus: Gesundheit, Umwelt, Beruf und Familie. Das hebt oft die Lebensqualität, macht große Familien aber weniger selbstverständlich."
+  };
+
   const metricByKey = metrics.reduce((map, metric) => {
     map[metric.key] = metric;
     return map;
@@ -393,6 +407,9 @@
   };
 
   let timer = null;
+  let tooltipIntent = null;
+  let tooltipHideTimer = null;
+  let tooltipClickSuppression = { trigger: null, until: 0 };
   applyLanguage();
 
   function initialLanguage() {
@@ -607,6 +624,9 @@
   }
 
   function render() {
+    cancelTooltipIntent();
+    hideStationTooltips();
+
     if (state.screen === "intro") {
       renderIntro();
       return;
@@ -862,6 +882,11 @@
         </div>
       `
       : "";
+    const tooltipText = metricTooltips[metric.key] || "";
+    const tooltipId = `station-tooltip-${metric.key}`;
+    const tooltipAttributes = tooltipText && !isPlotVisible
+      ? ` data-tooltip-trigger aria-describedby="${tooltipId}"`
+      : "";
 
     return `
       <article class="station ${controlClass} station-${metric.art}" style="left:${metric.x}%; top:${metric.y}%; width:${metric.w}%; height:${metric.h}%;">
@@ -869,9 +894,10 @@
           <div class="meter-fill" style="height:${percent}%"></div>
           <span class="meter-value">${Math.round(value)}</span>
         </div>
-        <button class="station-art station-art-button ${isPlotVisible ? "is-plot-visible" : ""}" data-action="toggle-plot" data-key="${metric.key}" aria-label="${artLabel}">
+        <button class="station-art station-art-button ${isPlotVisible ? "is-plot-visible" : ""}" data-action="toggle-plot" data-key="${metric.key}" aria-label="${artLabel}"${tooltipAttributes}>
           ${isPlotVisible ? renderStationPlot(metric) : renderMetricIcon(metric)}
         </button>
+        ${tooltipText ? `<p class="station-tooltip" id="${tooltipId}" role="tooltip">${escapeHtml(tooltipText)}</p>` : ""}
         <h3>${label}</h3>
         ${planned ? `<div class="planned">${signed(planned)}</div>` : ""}
         ${controls}
@@ -1289,6 +1315,118 @@
     render();
   }
 
+  function tooltipTriggerFromEvent(event) {
+    return event.target.closest ? event.target.closest("[data-tooltip-trigger]") : null;
+  }
+
+  function relatedTargetInside(trigger, relatedTarget) {
+    return relatedTarget instanceof Node && trigger.contains(relatedTarget);
+  }
+
+  function cancelTooltipIntent() {
+    if (tooltipIntent && tooltipIntent.timer) {
+      clearTimeout(tooltipIntent.timer);
+    }
+
+    tooltipIntent = null;
+  }
+
+  function hideStationTooltips() {
+    if (tooltipHideTimer) {
+      clearTimeout(tooltipHideTimer);
+      tooltipHideTimer = null;
+    }
+
+    app.querySelectorAll(".station.is-tooltip-visible").forEach((station) => {
+      station.classList.remove("is-tooltip-visible");
+    });
+  }
+
+  function scheduleTooltipHide(delay) {
+    if (tooltipHideTimer) clearTimeout(tooltipHideTimer);
+    tooltipHideTimer = setTimeout(hideStationTooltips, delay);
+  }
+
+  function showStationTooltip(trigger) {
+    const station = trigger.closest(".station");
+    if (!station) return;
+
+    hideStationTooltips();
+    station.classList.add("is-tooltip-visible");
+
+    if (tooltipIntent && tooltipIntent.trigger === trigger) {
+      tooltipIntent.shown = true;
+      tooltipIntent.timer = null;
+    }
+  }
+
+  function startTooltipIntent(trigger, event) {
+    if (state.screen !== "game" || state.view !== "control" || state.showPlots) return;
+    if (!trigger || trigger.disabled) return;
+    if (tooltipIntent && tooltipIntent.trigger === trigger && tooltipIntent.pointerType === event.pointerType) return;
+
+    cancelTooltipIntent();
+    if (event.pointerType === "mouse") hideStationTooltips();
+    if (tooltipHideTimer) {
+      clearTimeout(tooltipHideTimer);
+      tooltipHideTimer = null;
+    }
+
+    tooltipIntent = {
+      trigger,
+      pointerId: event.pointerId,
+      pointerType: event.pointerType || "mouse",
+      startX: event.clientX,
+      startY: event.clientY,
+      shown: false,
+      timer: setTimeout(() => showStationTooltip(trigger), TOOLTIP_DELAY)
+    };
+  }
+
+  function suppressNextTooltipClick(trigger) {
+    tooltipClickSuppression = {
+      trigger,
+      until: Date.now() + 900
+    };
+  }
+
+  function consumeSuppressedTooltipClick(event) {
+    const { trigger, until } = tooltipClickSuppression;
+    if (!trigger || Date.now() > until) return false;
+    if (trigger === event.target || trigger.contains(event.target)) {
+      tooltipClickSuppression = { trigger: null, until: 0 };
+      return true;
+    }
+
+    return false;
+  }
+
+  function handleTooltipMove(event) {
+    if (!tooltipIntent || tooltipIntent.pointerType === "mouse" || tooltipIntent.pointerId !== event.pointerId) return;
+
+    const moved = Math.hypot(event.clientX - tooltipIntent.startX, event.clientY - tooltipIntent.startY);
+    if (moved <= TOOLTIP_MOVE_TOLERANCE) return;
+
+    const wasShown = tooltipIntent.shown;
+    cancelTooltipIntent();
+    if (wasShown) hideStationTooltips();
+  }
+
+  function releaseTooltipIntent(event) {
+    if (!tooltipIntent || tooltipIntent.pointerId !== event.pointerId) return;
+
+    const { trigger, shown, pointerType } = tooltipIntent;
+    cancelTooltipIntent();
+
+    if (shown && pointerType !== "mouse") {
+      suppressNextTooltipClick(trigger);
+      scheduleTooltipHide(TOOLTIP_RELEASE_VISIBLE_MS);
+      return;
+    }
+
+    if (pointerType !== "mouse") hideStationTooltips();
+  }
+
   app.addEventListener("submit", (event) => {
     const form = event.target.closest("[data-action='start-game']");
     if (!form) return;
@@ -1309,7 +1447,52 @@
     render();
   });
 
+  app.addEventListener("pointerover", (event) => {
+    if (event.pointerType !== "mouse") return;
+
+    const trigger = tooltipTriggerFromEvent(event);
+    if (!trigger || relatedTargetInside(trigger, event.relatedTarget)) return;
+
+    startTooltipIntent(trigger, event);
+  });
+
+  app.addEventListener("pointerout", (event) => {
+    if (event.pointerType !== "mouse") return;
+
+    const trigger = tooltipTriggerFromEvent(event);
+    if (!trigger || relatedTargetInside(trigger, event.relatedTarget)) return;
+
+    if (tooltipIntent && tooltipIntent.trigger === trigger) cancelTooltipIntent();
+    hideStationTooltips();
+  });
+
+  app.addEventListener("pointerdown", (event) => {
+    const trigger = tooltipTriggerFromEvent(event);
+    if (!trigger) {
+      hideStationTooltips();
+      return;
+    }
+
+    if (event.pointerType === "mouse") return;
+    startTooltipIntent(trigger, event);
+  });
+
+  app.addEventListener("pointermove", handleTooltipMove);
+  app.addEventListener("pointerup", releaseTooltipIntent);
+  app.addEventListener("pointercancel", releaseTooltipIntent);
+
+  app.addEventListener("contextmenu", (event) => {
+    const trigger = tooltipTriggerFromEvent(event);
+    if (!trigger) return;
+    if (tooltipIntent || trigger.closest(".station.is-tooltip-visible")) event.preventDefault();
+  });
+
   app.addEventListener("click", (event) => {
+    if (consumeSuppressedTooltipClick(event)) {
+      event.preventDefault();
+      return;
+    }
+
     const target = event.target.closest("[data-action]");
     if (!target) return;
 
