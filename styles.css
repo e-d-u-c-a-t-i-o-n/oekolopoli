@@ -85,22 +85,22 @@ button:disabled {
   align-items: stretch;
   isolation: isolate;
   padding: clamp(24px, 5vw, 72px);
-  --intro-bg: url("assets/images/start-industrieland.png");
+  --intro-bg: url("assets/images/start-industrieland.jpg");
   background:
     linear-gradient(130deg, rgba(8, 185, 216, 0.18), transparent 36%),
     linear-gradient(180deg, #fbfeff 0%, #eaf9fb 52%, #d7eff4 100%);
 }
 
 .intro-screen[data-scenario="industrieland"] {
-  --intro-bg: url("assets/images/start-industrieland.png");
+  --intro-bg: url("assets/images/start-industrieland.jpg");
 }
 
 .intro-screen[data-scenario="schwellenland"] {
-  --intro-bg: url("assets/images/start-schwellenland.png");
+  --intro-bg: url("assets/images/start-schwellenland.jpg");
 }
 
 .intro-screen[data-scenario="entwicklungsland"] {
-  --intro-bg: url("assets/images/start-entwicklungsland.png");
+  --intro-bg: url("assets/images/start-entwicklungsland.jpg");
 }
 
 .intro-screen::before {
@@ -425,7 +425,7 @@ button:disabled {
 }
 
 .imprint-screen::before {
-  background: url("assets/images/start-industrieland.png") center / cover no-repeat;
+  background: url("assets/images/start-industrieland.jpg") center / cover no-repeat;
   opacity: 0.42;
   filter: saturate(0.86) contrast(1.08);
 }
@@ -1228,31 +1228,31 @@ button:disabled {
   place-items: center;
   isolation: isolate;
   padding: clamp(18px, 5vw, 62px);
-  --result-bg: url("assets/images/success-industrieland.png");
+  --result-bg: url("assets/images/success-industrieland.jpg");
   background:
     linear-gradient(130deg, rgba(8, 185, 216, 0.14), transparent 40%),
     linear-gradient(180deg, #fbfeff 0%, #eaf9fb 52%, #d7eff4 100%);
 }
 
 .result-screen[data-outcome="success"][data-scenario="industrieland"] {
-  --result-bg: url("assets/images/success-industrieland.png");
+  --result-bg: url("assets/images/success-industrieland.jpg");
 }
 
 .result-screen[data-outcome="success"][data-scenario="schwellenland"] {
-  --result-bg: url("assets/images/success-schwellenland.png");
+  --result-bg: url("assets/images/success-schwellenland.jpg");
 }
 
 .result-screen[data-outcome="success"][data-scenario="entwicklungsland"] {
-  --result-bg: url("assets/images/success-entwicklungsland.png");
+  --result-bg: url("assets/images/success-entwicklungsland.jpg");
 }
 
 .result-screen[data-outcome="fail"][data-scenario="industrieland"] {
-  --result-bg: url("assets/images/start-schwellenland.png");
+  --result-bg: url("assets/images/start-schwellenland.jpg");
 }
 
 .result-screen[data-outcome="fail"][data-scenario="schwellenland"],
 .result-screen[data-outcome="fail"][data-scenario="entwicklungsland"] {
-  --result-bg: url("assets/images/start-entwicklungsland.png");
+  --result-bg: url("assets/images/start-entwicklungsland.jpg");
 }
 
 .result-screen::after {
