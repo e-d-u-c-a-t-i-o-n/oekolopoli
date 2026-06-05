@@ -811,6 +811,13 @@ button:disabled {
   stroke-linejoin: round;
 }
 
+.station-dump .metric-icon,
+.station-home .metric-icon {
+  width: min(64%, 118px);
+  height: min(70%, 118px);
+  stroke-width: 3.6;
+}
+
 .station-fields .station-art,
 .station-school .station-art,
 .station-factory .station-art,

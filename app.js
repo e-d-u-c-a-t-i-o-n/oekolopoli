@@ -22,16 +22,16 @@
         bevoelkerung: "Bevölkerung",
         vermehrungsrate: "Vermehrungsrate",
         lebensqualitaet: "Lebensqualität",
-        aufklaerung: "Aufklärung"
+        aufklaerung: "Bildung"
       },
       metricShort: {
         lebensqualitaet: "Lebensqual.",
-        aufklaerung: "Aufklärung"
+        aufklaerung: "Bildung"
       },
       scenarios: {
         industrieland: {
           label: "Industrieland",
-          description: "Hohe Produktion, bessere Aufklärung, spürbare Umweltbelastung."
+          description: "Hohe Produktion, bessere Bildung, spürbare Umweltbelastung."
         },
         schwellenland: {
           label: "Schwellenland",
@@ -46,7 +46,7 @@
         sanierung: "Sanierung",
         produktion: "Produktion",
         umweltbelastung: "Umweltbelastung",
-        aufklaerung: "Aufklärung",
+        aufklaerung: "Bildung",
         lebensqualitaet: "Lebensqualität",
         vermehrungsrate: "Vermehrungsrate",
         bevoelkerung: "Bevölkerung",
@@ -284,7 +284,7 @@
     { key: "bevoelkerung", label: "Bevölkerung", max: 48, color: "green", x: 3, y: 57, w: 22, h: 27, art: "city", image: "assets/images/metric-bevoelkerung.png" },
     { key: "vermehrungsrate", label: "Vermehrungsrate", max: 32, color: "orange", x: 27, y: 57, w: 21, h: 27, art: "home", image: "assets/images/metric-vermehrungsrate.png" },
     { key: "lebensqualitaet", label: "Lebensqualität", max: 32, color: "red", x: 51, y: 57, w: 22, h: 27, art: "park", image: "assets/images/metric-lebensqualitaet.png", control: true },
-    { key: "aufklaerung", label: "Aufklärung", max: 32, color: "orange", x: 76, y: 57, w: 22, h: 27, art: "school", image: "assets/images/metric-aufklaerung.png", control: true }
+    { key: "aufklaerung", label: "Bildung", max: 32, color: "orange", x: 76, y: 57, w: 22, h: 27, art: "school", image: "assets/images/metric-aufklaerung.png", control: true }
   ];
 
   const metricByKey = metrics.reduce((map, metric) => {
@@ -297,7 +297,7 @@
   const scenarios = {
     industrieland: {
       label: "Industrieland",
-      description: "Hohe Produktion, bessere Aufklärung, spürbare Umweltbelastung.",
+      description: "Hohe Produktion, bessere Bildung, spürbare Umweltbelastung.",
       actionPoints: 8,
       values: {
         politik: 2,
@@ -802,11 +802,13 @@
         <path d="M20 44h4M31 44h4M42 44h4"></path>
       `,
       dump: `
-        <path d="M15 48h34"></path>
-        <path d="M19 43c0-9 5-15 13-19 8 4 13 10 13 19"></path>
-        <path d="M32 24V10"></path>
-        <path d="M24 16h16"></path>
-        <path d="M19 54h26"></path>
+        <path d="M12 18 19 8l10 7-7 10Z"></path>
+        <path d="M22 21h15c7 0 11 4 14 11l4 10"></path>
+        <path d="M14 28c4 8 5 17 2 27"></path>
+        <path d="M29 31c-5 7-7 15-6 24"></path>
+        <path d="M44 33c-4 7-6 14-5 22"></path>
+        <path d="M8 48c10-4 19-4 30 0 7 2 13 2 19-1"></path>
+        <path d="M9 56c10-4 19-4 30 0 7 2 13 2 19-1"></path>
       `,
       city: `
         <circle cx="22" cy="22" r="8"></circle>
@@ -815,9 +817,15 @@
         <path d="M34 50c2-8 6-12 12-12 5 0 9 4 11 12"></path>
       `,
       home: `
-        <path d="M12 48 32 18l20 30"></path>
-        <path d="M20 48h24"></path>
-        <path d="M32 18v38"></path>
+        <circle cx="21" cy="15" r="5"></circle>
+        <circle cx="38" cy="15" r="5"></circle>
+        <path d="M13 38v-9c0-5 3-8 8-8s8 3 8 8v9"></path>
+        <path d="M31 38v-9c0-5 3-8 8-8s8 3 8 8v9"></path>
+        <path d="M10 47c15-3 30-8 47-23"></path>
+        <path d="M57 24h-9M57 24l-3 9"></path>
+        <path d="M12 57v-9h7v9"></path>
+        <path d="M29 57V44h7v13"></path>
+        <path d="M46 57V37h7v20"></path>
       `,
       park: `
         <path d="M32 55s20-12 20-30a12 12 0 0 0-20-8 12 12 0 0 0-20 8c0 18 20 30 20 30Z"></path>
