@@ -281,10 +281,10 @@
     { key: "sanierung", label: "Sanierung", max: 32, color: "red", x: 28, y: 7, w: 20, h: 27, art: "fields", image: "assets/images/metric-sanierung.jpg", control: true },
     { key: "produktion", label: "Produktion", max: 32, color: "green", x: 53, y: 7, w: 20, h: 27, art: "factory", image: "assets/images/metric-produktion.jpg", control: true },
     { key: "umweltbelastung", label: "Umweltbelastung", max: 32, color: "orange", x: 78, y: 7, w: 20, h: 27, art: "dump", image: "assets/images/metric-umweltbelastung.jpg" },
-    { key: "bevoelkerung", label: "Bevölkerung", max: 48, color: "green", x: 3, y: 57, w: 22, h: 27, art: "city", image: "assets/images/metric-bevoelkerung.jpg" },
-    { key: "vermehrungsrate", label: "Vermehrungsrate", max: 32, color: "orange", x: 27, y: 57, w: 21, h: 27, art: "home", image: "assets/images/metric-vermehrungsrate.jpg" },
-    { key: "lebensqualitaet", label: "Lebensqualität", max: 32, color: "red", x: 51, y: 57, w: 22, h: 27, art: "park", image: "assets/images/metric-lebensqualitaet.jpg", control: true },
-    { key: "aufklaerung", label: "Bildung", max: 32, color: "orange", x: 76, y: 57, w: 22, h: 27, art: "school", image: "assets/images/metric-aufklaerung.jpg", control: true }
+    { key: "bevoelkerung", label: "Bevölkerung", max: 48, color: "green", x: 3, y: 47, w: 22, h: 27, art: "city", image: "assets/images/metric-bevoelkerung.jpg" },
+    { key: "vermehrungsrate", label: "Vermehrungsrate", max: 32, color: "orange", x: 27, y: 47, w: 21, h: 27, art: "home", image: "assets/images/metric-vermehrungsrate.jpg" },
+    { key: "lebensqualitaet", label: "Lebensqualität", max: 32, color: "red", x: 51, y: 47, w: 22, h: 27, art: "park", image: "assets/images/metric-lebensqualitaet.jpg", control: true },
+    { key: "aufklaerung", label: "Bildung", max: 32, color: "orange", x: 76, y: 47, w: 22, h: 27, art: "school", image: "assets/images/metric-aufklaerung.jpg", control: true }
   ];
 
   const metricByKey = metrics.reduce((map, metric) => {

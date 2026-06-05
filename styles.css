@@ -669,6 +669,25 @@ button:disabled {
   min-height: 480px;
 }
 
+.control-board {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(76px, 7vh, 88px) clamp(28px, 3vw, 48px);
+  align-content: start;
+  padding: clamp(22px, 2.4vw, 34px);
+  aspect-ratio: auto;
+  min-height: 0;
+  overflow: visible;
+}
+
+.control-board .station {
+  position: relative;
+  left: auto !important;
+  top: auto !important;
+  width: auto !important;
+  height: clamp(190px, 20vh, 215px) !important;
+}
+
 .board-logo {
   position: absolute;
   left: 50%;
