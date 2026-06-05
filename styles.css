@@ -813,9 +813,26 @@ button:disabled {
 
 .station-dump .metric-icon,
 .station-home .metric-icon {
-  width: min(64%, 118px);
-  height: min(70%, 118px);
-  stroke-width: 3.6;
+  width: min(45%, 83px);
+  height: min(51%, 83px);
+  stroke-width: 4.5;
+}
+
+.station-home .metric-icon {
+  width: min(47.25%, 87px);
+  height: min(53.55%, 87px);
+}
+
+.station-factory .metric-icon {
+  width: min(64%, 120px);
+  height: min(74%, 120px);
+  stroke-width: 3.48;
+}
+
+.station-school .metric-icon {
+  width: min(59%, 109px);
+  height: min(67%, 109px);
+  stroke-width: 3.81;
 }
 
 .station-fields .station-art,
