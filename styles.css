@@ -637,7 +637,7 @@ button:disabled {
 
 .retro-board {
   position: relative;
-  width: min(100%, 1320px, calc((100vh - 186px) * 1.777));
+  width: min(100%, 1480px);
   aspect-ratio: 16 / 9;
   overflow: hidden;
   border: 1px solid var(--line-strong);
@@ -802,8 +802,8 @@ button:disabled {
 }
 
 .metric-icon {
-  width: min(44%, 82px);
-  height: min(54%, 82px);
+  width: min(56%, 104px);
+  height: min(64%, 104px);
   fill: none;
   stroke: currentColor;
   stroke-width: 4;
