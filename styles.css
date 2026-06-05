@@ -1247,12 +1247,15 @@ button:disabled {
 }
 
 .result-screen[data-outcome="fail"][data-scenario="industrieland"] {
-  --result-bg: url("assets/images/start-schwellenland.jpg");
+  --result-bg: url("assets/images/fail-industrieland.jpg");
 }
 
-.result-screen[data-outcome="fail"][data-scenario="schwellenland"],
+.result-screen[data-outcome="fail"][data-scenario="schwellenland"] {
+  --result-bg: url("assets/images/fail-schwellenland.jpg");
+}
+
 .result-screen[data-outcome="fail"][data-scenario="entwicklungsland"] {
-  --result-bg: url("assets/images/start-entwicklungsland.jpg");
+  --result-bg: url("assets/images/fail-entwicklungsland.jpg");
 }
 
 .result-screen::after {
