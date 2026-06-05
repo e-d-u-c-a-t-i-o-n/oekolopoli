@@ -111,7 +111,7 @@ button:disabled {
   pointer-events: none;
   background: var(--intro-bg) center / cover no-repeat;
   opacity: 0.974;
-  filter: saturate(0.9) contrast(1.0);
+  filter: saturate(0.9) contrast(1.10);
 }
 
 .intro-screen::after {
