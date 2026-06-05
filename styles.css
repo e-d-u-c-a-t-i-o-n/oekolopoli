@@ -764,7 +764,7 @@ button:disabled {
   min-width: 42px;
   padding: 2px 6px;
   border-radius: 9px;
-  background: #fff;
+  background: rgba(255, 255, 255, 0.75);
   color: var(--ink);
   font-size: 0.86rem;
   font-weight: 900;
@@ -1506,6 +1506,10 @@ button:disabled {
   .control-board .meter {
     width: 32px;
     min-height: 132px;
+  }
+
+  .control-board .meter-value {
+    bottom: 26px;
   }
 
   .control-board .station-controls {
