@@ -377,7 +377,7 @@
     "aufklaerung->lebensqualitaet": "M1080 595 L970 595",
     "aufklaerung->vermehrungsrate": "M1210 610 L1210 760 L420 760 C392 760 370 742 370 704",
     "aufklaerung->aufklaerung": "M1168 610 L1168 650 C1138 678 1100 690 1062 674",
-    "lebensqualitaet->politik": "M684 705 L684 430 L32 430 L32 280",
+    "lebensqualitaet->politik": "M660 600 L660 400 L40 400 L40 280",
     "lebensqualitaet->lebensqualitaet": "M764 618 C740 660 720 668 684 642",
     "lebensqualitaet->vermehrungsrate": "M682 690 L382 690",
     "vermehrungsrate->bevoelkerung": "M382 628 L32 628",
@@ -884,7 +884,7 @@
       : "";
     const tooltipText = metricTooltips[metric.key] || "";
     const tooltipId = `station-tooltip-${metric.key}`;
-    const tooltipAttributes = tooltipText && !isPlotVisible
+    const tooltipAttributes = tooltipText
       ? ` data-tooltip-trigger aria-describedby="${tooltipId}"`
       : "";
 
@@ -1361,7 +1361,7 @@
   }
 
   function startTooltipIntent(trigger, event) {
-    if (state.screen !== "game" || state.view !== "control" || state.showPlots) return;
+    if (state.screen !== "game" || state.view !== "control") return;
     if (!trigger || trigger.disabled) return;
     if (tooltipIntent && tooltipIntent.trigger === trigger && tooltipIntent.pointerType === event.pointerType) return;
 
