@@ -776,6 +776,15 @@ button:disabled {
   transform: rotate(45deg);
 }
 
+.station-tooltip-analysis {
+  display: inline-block;
+  margin-top: 8px;
+  border-top: 1px solid rgba(6, 34, 52, 0.14);
+  color: #123441;
+  font-weight: 700;
+  padding-top: 8px;
+}
+
 .control-board .station:nth-of-type(-n+4) .station-tooltip {
   top: calc(100% + 14px);
   bottom: auto;

@@ -306,6 +306,17 @@
     return map;
   }, {});
 
+  const effectDirections = {
+    politik: 1,
+    sanierung: 1,
+    produktion: 1,
+    umweltbelastung: -1,
+    bevoelkerung: 1,
+    vermehrungsrate: -1,
+    lebensqualitaet: 1,
+    aufklaerung: 1
+  };
+
   const controlKeys = ["sanierung", "produktion", "lebensqualitaet", "aufklaerung"];
 
   const scenarios = {
@@ -511,6 +522,74 @@
   function metricLabel(key) {
     const labels = text().metrics;
     return labels[key] || (metricByKey[key] ? metricByKey[key].label : key);
+  }
+
+  function effectScoreForLevel(key, level, baseValues) {
+    const values = Object.assign({}, baseValues, { [key]: level });
+
+    return relations.reduce((score, relation) => {
+      const [from, to, curveKey] = relation;
+      if (from !== key) return score;
+
+      const direction = effectDirections[to] || 1;
+      const delta = curves[curveKey](level, { values });
+      return score + (direction * delta);
+    }, 0);
+  }
+
+  function nearestEffectChange(key) {
+    const outgoingRelations = relations.filter(([from]) => from === key);
+    if (!outgoingRelations.length) return { hasEffects: false };
+
+    const baseValues = valuesAfterAllocations(state.values, state.allocations);
+    const currentLevel = clampMetricValue(key, Math.round(baseValues[key]));
+    const metric = metricByKey[key];
+    const min = metricMinValue(key);
+    const max = metric.max;
+    const baseScore = effectScoreForLevel(key, currentLevel, baseValues);
+    let better = null;
+    let worse = null;
+
+    for (let distance = 1; currentLevel - distance >= min || currentLevel + distance <= max; distance += 1) {
+      const candidates = [currentLevel + distance, currentLevel - distance]
+        .filter((level) => level >= min && level <= max);
+
+      candidates.forEach((level) => {
+        const score = effectScoreForLevel(key, level, baseValues);
+
+        if (better === null && score > baseScore) better = level;
+        if (worse === null && score < baseScore) worse = level;
+      });
+
+      if (better !== null && worse !== null) break;
+    }
+
+    return {
+      hasEffects: true,
+      better,
+      worse
+    };
+  }
+
+  function effectChangeText(key) {
+    const change = nearestEffectChange(key);
+    if (!change.hasEffects) return "Wirkung: keine direkte Wirkung";
+
+    const better = change.better === null ? "nicht besser" : `ab ${change.better} besser`;
+    const worse = change.worse === null ? "nicht schlechter" : `ab ${change.worse} schlechter`;
+    return `Wirkung: ${better} / ${worse}`;
+  }
+
+  function renderStationTooltip(key, tooltipText) {
+    const analysisText = effectChangeText(key);
+
+    return `
+      <p class="station-tooltip" id="station-tooltip-${key}" role="tooltip" data-tooltip-version="situative-effects">
+        ${escapeHtml(tooltipText)}
+        <br>
+        <strong class="station-tooltip-analysis">${escapeHtml(analysisText)}</strong>
+      </p>
+    `;
   }
 
   function consoleLabel(key) {
@@ -901,7 +980,7 @@
         <button class="station-art station-art-button ${isPlotVisible ? "is-plot-visible" : ""}" data-action="toggle-plot" data-key="${metric.key}" aria-label="${artLabel}"${tooltipAttributes}>
           ${isPlotVisible ? renderStationPlot(metric) : renderMetricIcon(metric)}
         </button>
-        ${tooltipText ? `<p class="station-tooltip" id="${tooltipId}" role="tooltip">${escapeHtml(tooltipText)}</p>` : ""}
+        ${tooltipText ? renderStationTooltip(metric.key, tooltipText) : ""}
         <h3>${label}</h3>
         ${planned ? `<div class="planned">${signed(planned)}</div>` : ""}
         ${controls}
