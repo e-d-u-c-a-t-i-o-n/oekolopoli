@@ -1538,6 +1538,20 @@
     };
   }
 
+  function handleTouchTooltipTap(trigger) {
+    if (state.screen !== "game" || state.view !== "control") return false;
+    if (!trigger || trigger.disabled) return false;
+
+    const station = trigger.closest(".station");
+    if (!station) return false;
+    if (station.classList.contains("is-tooltip-visible")) return false;
+
+    cancelTooltipIntent();
+    showStationTooltip(trigger);
+    suppressNextTooltipClick(trigger);
+    return true;
+  }
+
   function consumeSuppressedTooltipClick(event) {
     const { trigger, until } = tooltipClickSuppression;
     if (!trigger || Date.now() > until) return false;
@@ -1622,7 +1636,7 @@
     }
 
     if (event.pointerType === "mouse") return;
-    startTooltipIntent(trigger, event);
+    handleTouchTooltipTap(trigger);
   });
 
   app.addEventListener("pointermove", handleTooltipMove);
