@@ -318,6 +318,8 @@
     aufklaerung: 1
   };
 
+  const actionPointKeys = ["bevoelkerung", "politik", "produktion", "lebensqualitaet"];
+
   const controlKeys = ["sanierung", "produktion", "lebensqualitaet", "aufklaerung"];
 
   const scenarios = {
@@ -567,28 +569,90 @@
 
     return {
       hasEffects: true,
+      currentLevel,
       better,
       worse
     };
+  }
+
+  function thresholdText(key, level, currentLevel, label) {
+    if (level === null) return `nicht ${label}`;
+    if (level < currentLevel) {
+      if (key === "politik" && label === "weniger") return "unter 0 abgesetzt!";
+      return `unter ${level + 1} ${label}`;
+    }
+
+    return `ab ${level} ${label}`;
   }
 
   function effectChangeText(key) {
     const change = nearestEffectChange(key);
     if (!change.hasEffects) return "Wirkung: keine direkte Wirkung";
 
-    const better = change.better === null ? "nicht besser" : `ab ${change.better} besser`;
-    const worse = change.worse === null ? "nicht schlechter" : `ab ${change.worse} schlechter`;
+    const better = thresholdText(key, change.better, change.currentLevel, "besser");
+    const worse = thresholdText(key, change.worse, change.currentLevel, "schlechter");
     return `Wirkung: ${better} / ${worse}`;
   }
 
+  function actionPointTotalForLevel(key, level, baseValues) {
+    const values = Object.assign({}, baseValues, { [key]: level });
+    return calculateNextActionPoints(values).total;
+  }
+
+  function nearestActionPointChange(key) {
+    if (!actionPointKeys.includes(key)) return { hasActionPointEffect: false };
+
+    const baseValues = valuesAfterAllocations(state.values, state.allocations);
+    const currentLevel = clampMetricValue(key, Math.round(baseValues[key]));
+    const metric = metricByKey[key];
+    const min = metricMinValue(key);
+    const max = metric.max;
+    const baseTotal = actionPointTotalForLevel(key, currentLevel, baseValues);
+    let more = null;
+    let less = null;
+
+    for (let distance = 1; currentLevel - distance >= min || currentLevel + distance <= max; distance += 1) {
+      const candidates = [currentLevel + distance, currentLevel - distance]
+        .filter((level) => level >= min && level <= max);
+
+      candidates.forEach((level) => {
+        const total = actionPointTotalForLevel(key, level, baseValues);
+
+        if (more === null && total > baseTotal) more = level;
+        if (less === null && total < baseTotal) less = level;
+      });
+
+      if (more !== null && less !== null) break;
+    }
+
+    return {
+      hasActionPointEffect: true,
+      currentLevel,
+      more,
+      less
+    };
+  }
+
+  function actionPointChangeText(key) {
+    const change = nearestActionPointChange(key);
+    if (!change.hasActionPointEffect) return "Aktionspunkte: keine direkte Wirkung";
+
+    const more = thresholdText(key, change.more, change.currentLevel, "mehr");
+    const less = thresholdText(key, change.less, change.currentLevel, "weniger");
+    return `Aktionspunkte: ${more} / ${less}`;
+  }
+
   function renderStationTooltip(key, tooltipText) {
-    const analysisText = effectChangeText(key);
+    const effectText = effectChangeText(key);
+    const actionPointText = actionPointChangeText(key);
 
     return `
-      <p class="station-tooltip" id="station-tooltip-${key}" role="tooltip" data-tooltip-version="situative-effects">
+      <p class="station-tooltip" id="station-tooltip-${key}" role="tooltip" data-tooltip-version="situative-effects-action-points">
         ${escapeHtml(tooltipText)}
         <br>
-        <strong class="station-tooltip-analysis">${escapeHtml(analysisText)}</strong>
+        <strong class="station-tooltip-analysis">${escapeHtml(effectText)}</strong>
+        <br>
+        <strong class="station-tooltip-analysis">${escapeHtml(actionPointText)}</strong>
       </p>
     `;
   }
