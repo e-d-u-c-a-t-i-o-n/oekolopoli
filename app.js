@@ -486,6 +486,10 @@
     return state.actionPoints - usedActionPoints(state.allocations);
   }
 
+  function canStartRound() {
+    return state.round >= 5 || remainingActionPoints() === 0;
+  }
+
   function escapeHtml(value) {
     return String(value)
       .replace(/&/g, "&amp;")
@@ -758,8 +762,8 @@
     const viewIcon = state.view === "control" ? "⇄" : "▦";
     const disabled = state.running ? "disabled" : "";
     const left = remainingActionPoints();
-    const startDisabled = state.running || left !== 0 ? "disabled" : "";
-    const fastForwardDisabled = state.running || left === 0 ? "" : "disabled";
+    const startDisabled = state.running || !canStartRound() ? "disabled" : "";
+    const fastForwardDisabled = state.running || canStartRound() ? "" : "disabled";
 
     return `
       <header class="topline">
@@ -978,7 +982,7 @@
   function renderBottomBar() {
     const copy = text();
     const left = remainingActionPoints();
-    const startDisabled = state.running || left !== 0 ? "disabled" : "";
+    const startDisabled = state.running || !canStartRound() ? "disabled" : "";
     const pauseDisabled = state.running ? "" : "disabled";
     const bottomToggleLabel = state.view === "control" ? copy.views.state : copy.views.control;
     const activeText = state.activeStep
@@ -1073,7 +1077,7 @@
     if (projectedValue < 0 || projectedValue > metricByKey[key].max) return;
 
     state.allocations = nextAllocations;
-    state.message = remainingActionPoints() === 0
+    state.message = canStartRound()
       ? text().messages.allAllocated
       : text().messages.distributeAll;
     render();
@@ -1091,7 +1095,7 @@
   function startSimulation() {
     if (state.running) return;
 
-    if (remainingActionPoints() !== 0) {
+    if (!canStartRound()) {
       state.message = text().messages.allocateBeforeStart;
       render();
       return;
@@ -1109,7 +1113,7 @@
 
   function fastForwardSimulation() {
     if (!state.running) {
-      if (remainingActionPoints() !== 0) {
+      if (!canStartRound()) {
         state.message = text().messages.allocateBeforeFastForward;
         render();
         return;
